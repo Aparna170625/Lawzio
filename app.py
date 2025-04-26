@@ -241,16 +241,59 @@ else:
     with main_col1:
         st.header(get_ui_text("document_upload", st.session_state.ui_language))
     
-    # Add a styled upload box
-    st.markdown('<div class="upload-box">', unsafe_allow_html=True)
+    # Add a styled upload box with prominent border and background
+    st.markdown('''
+    <style>
+    .upload-box {
+        border: 2px dashed #4267B2;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 10px 0;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+    .upload-header {
+        font-size: 18px;
+        color: #4267B2;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    </style>
+    <div class="upload-box">
+        <div class="upload-header">📄 Upload your legal document here</div>
+    </div>
+    ''', unsafe_allow_html=True)
+    
     uploaded_file = st.file_uploader(
         get_ui_text("upload_prompt", st.session_state.ui_language),
         type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
         help=get_ui_text("upload_help", st.session_state.ui_language)
     )
-    st.markdown('</div>', unsafe_allow_html=True)
     
-    # Privacy options
+    # Privacy options section with descriptions
+    st.markdown('''
+    <style>
+    .privacy-box {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+        background-color: #f8f9fa;
+    }
+    .privacy-header {
+        font-size: 18px;
+        color: #4267B2;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    </style>
+    <div class="privacy-box">
+        <div class="privacy-header">🔒 Privacy Settings</div>
+    </div>
+    ''', unsafe_allow_html=True)
+    
+    st.markdown("Choose how you want your document to be stored and processed:")
+    
     privacy_options = ["standard", "enhanced", "maximum"]
     privacy_labels = [
         get_ui_text("privacy_standard", st.session_state.ui_language, "Standard"),
@@ -258,15 +301,59 @@ else:
         get_ui_text("privacy_maximum", st.session_state.ui_language, "Maximum")
     ]
     
-    selected_privacy_label = st.radio(
-        get_ui_text("privacy_level", st.session_state.ui_language, "Privacy Level"),
-        privacy_labels,
-        help=get_ui_text("privacy_level_help", st.session_state.ui_language, 
-                        "Choose the level of privacy for document storage and processing")
-    )
+    # Add descriptions for each privacy level
+    privacy_descriptions = [
+        "Basic protection with minimal encryption",
+        "Enhanced protection with full document encryption",
+        "Maximum protection with encryption and anonymization of sensitive information"
+    ]
     
-    # Map display label back to internal value
-    selected_privacy = privacy_options[privacy_labels.index(selected_privacy_label)]
+    # Create a formatted radio button with descriptions
+    selected_privacy_index = 0  # Default to Standard
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        standard_selected = st.radio(
+            f"🔓 {privacy_labels[0]}",
+            [True, False],
+            index=1 if selected_privacy_index != 0 else 0,
+            label_visibility="collapsed",
+            key="standard_privacy"
+        )
+        st.markdown(f"**{privacy_labels[0]}**")
+        st.caption(privacy_descriptions[0])
+        if standard_selected:
+            selected_privacy_index = 0
+    
+    with col2:
+        enhanced_selected = st.radio(
+            f"🔐 {privacy_labels[1]}",
+            [True, False],
+            index=1 if selected_privacy_index != 1 else 0,
+            label_visibility="collapsed",
+            key="enhanced_privacy"
+        )
+        st.markdown(f"**{privacy_labels[1]}**")
+        st.caption(privacy_descriptions[1])
+        if enhanced_selected:
+            selected_privacy_index = 1
+    
+    with col3:
+        maximum_selected = st.radio(
+            f"🔒 {privacy_labels[2]}",
+            [True, False],
+            index=1 if selected_privacy_index != 2 else 0,
+            label_visibility="collapsed",
+            key="maximum_privacy"
+        )
+        st.markdown(f"**{privacy_labels[2]}**")
+        st.caption(privacy_descriptions[2])
+        if maximum_selected:
+            selected_privacy_index = 2
+    
+    # Set the selected privacy option based on the radio buttons
+    selected_privacy = privacy_options[selected_privacy_index]
     
     if uploaded_file is not None:
         try:
