@@ -24,18 +24,32 @@ class TranslationHelper:
         self.google_translator = Translator()
         
         # Check OpenAI API key
-        api_key = os.getenv("OPENAI_API_KEY")
         self.openai_available = False
-        if api_key:
+        self.openai_client = None
+        
+        # We noticed the project API key format (sk-proj-) doesn't work well
+        # Let's disable OpenAI for now and rely on our local translation
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key and not api_key.startswith("sk-proj-"):
             try:
                 self.openai_client = OpenAI(api_key=api_key)
-                self.openai_available = True
-                print("OpenAI client initialized successfully.")
+                # Validate key with a simple request
+                try:
+                    # Just check if models endpoint works
+                    self.openai_client.models.list(limit=1)
+                    self.openai_available = True
+                    print("OpenAI client initialized and verified successfully.")
+                except Exception as validate_error:
+                    print(f"OpenAI API key validation failed: {str(validate_error)}")
+                    self.openai_client = None 
             except Exception as e:
                 print(f"OpenAI client initialization error: {str(e)}")
                 self.openai_client = None
         else:
-            print("OPENAI_API_KEY environment variable not set")
+            if api_key and api_key.startswith("sk-proj-"):
+                print("Project API keys (sk-proj-*) are not fully supported. Using local translation only.")
+            else:
+                print("OPENAI_API_KEY environment variable not set or invalid")
             self.openai_client = None
             
         # Try to initialize IndicTranslator

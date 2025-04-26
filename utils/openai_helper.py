@@ -12,15 +12,30 @@ class OpenAIHelper:
         """
         api_key = os.getenv("OPENAI_API_KEY")
         self.is_api_available = False
+        self.client = None
         
+        # We noticed the project API key format (sk-proj-) doesn't work well
+        # Let's check for that and provide a better error message
         if api_key:
-            try:
-                # Initialize client but don't validate API key yet
-                self.client = OpenAI(api_key=api_key)
-                self.is_api_available = True
-            except Exception as e:
-                print(f"OpenAI client initialization error: {str(e)}")
-                self.client = None
+            if api_key.startswith("sk-proj-"):
+                print("Project API keys (sk-proj-*) are not fully supported. Using local summarization only.")
+            else:
+                try:
+                    # Initialize client 
+                    self.client = OpenAI(api_key=api_key)
+                    
+                    # Validate the API key with a simple request
+                    try:
+                        # Just check if models endpoint works
+                        self.client.models.list(limit=1)
+                        self.is_api_available = True
+                        print("OpenAI client initialized and verified successfully.")
+                    except Exception as validate_error:
+                        print(f"OpenAI API key validation failed: {str(validate_error)}")
+                        self.client = None
+                except Exception as e:
+                    print(f"OpenAI client initialization error: {str(e)}")
+                    self.client = None
         else:
             print("OPENAI_API_KEY environment variable not set")
             self.client = None
