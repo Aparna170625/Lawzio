@@ -103,7 +103,19 @@ TRANSLATIONS = {
         
         # Footer
         "footer": "Lawzio - Making legal documents accessible for everyone | Created by M APARNA & PRAVEEN R",
-        "footer_tagline": "Lawzio - Making legal documents accessible for everyone | Created by M APARNA & PRAVEEN R"
+        "footer_tagline": "Lawzio - Making legal documents accessible for everyone | Created by M APARNA & PRAVEEN R",
+        
+        # History page
+        "history_title": "Document History",
+        "history_description": "View your previously processed documents and their summaries.",
+        "no_history": "No document history found. Process some documents to see them here.",
+        "upload_date": "Upload Date",
+        "language": "Language",
+        "select_document": "Select a document to view details:",
+        "document_details": "Document Details",
+        "document_not_found": "Document not found in the database.",
+        "document_summaries": "Document Summaries",
+        "no_summaries": "No summaries found for this document."
     },
     
     "hindi": {

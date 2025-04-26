@@ -134,9 +134,24 @@ def get_translation_helper():
 openai_helper = get_openai_helper()
 translation_helper = get_translation_helper()
 
+# Initialize page selection in session state if not exists
+if 'page' not in st.session_state:
+    st.session_state.page = 'main'
+
 # App header with custom styling
 st.markdown(f'<div class="big-title">{get_ui_text("app_title", st.session_state.ui_language)}</div>', unsafe_allow_html=True)
 st.markdown(f'<div class="subtitle">{get_ui_text("app_description", st.session_state.ui_language)}</div>', unsafe_allow_html=True)
+
+# Create tabs for navigation
+tab1, tab2 = st.tabs(["Main", "History"])
+
+with tab1:
+    if st.session_state.page != 'main':
+        st.session_state.page = 'main'
+    
+with tab2:
+    if st.session_state.page != 'history':
+        st.session_state.page = 'history'
 
 # Sidebar for settings
 with st.sidebar:
@@ -208,12 +223,19 @@ with st.sidebar:
     st.markdown(f"### {get_ui_text('privacy_notice', st.session_state.ui_language)}")
     st.markdown(get_ui_text('privacy_content', st.session_state.ui_language))
 
-# Main content
-main_col1, main_col2 = st.columns([2, 3])
+# Import history module
+from utils.history import display_history_page
 
-# Document upload section
-with main_col1:
-    st.header(get_ui_text("document_upload", st.session_state.ui_language))
+# Main content - conditional based on current page
+if st.session_state.page == 'history':
+    # Display history page
+    display_history_page(st.session_state.ui_language)
+else:
+    main_col1, main_col2 = st.columns([2, 3])
+    
+    # Document upload section
+    with main_col1:
+        st.header(get_ui_text("document_upload", st.session_state.ui_language))
     
     # Add a styled upload box
     st.markdown('<div class="upload-box">', unsafe_allow_html=True)

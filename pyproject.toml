@@ -12,6 +12,7 @@ dependencies = [
     "indic-transliteration==2.3.68",
     "langdetect>=1.0.9",
     "openai>=1.76.0",
+    "pandas>=2.2.3",
     "pdf2image>=1.17.0",
     "pillow>=11.2.1",
     "psycopg2-binary>=2.9.10",
