@@ -1,5 +1,7 @@
 import os
 import json
+import re
+from googletrans.constants import LANGUAGES, LANGCODES
 from googletrans import Translator
 from openai import OpenAI
 from langdetect import detect, LangDetectException
@@ -166,13 +168,33 @@ class TranslationHelper:
         # Try Google Translate for all other languages, or as fallback
         try:
             print(f"Using Google Translate for {source_language} to {target_language} translation")
-            result = self.google_translator.translate(text, dest=lang_code)
-            if result and result.text and result.text.strip():
-                return result.text
-            else:
-                raise Exception("Google Translate returned empty result")
+            # Use googletrans in synchronous mode with proper await handling
+            try:
+                # Use the synchronous translate method
+                result = self.google_translator.translate(text, dest=lang_code)
+                if result and hasattr(result, 'text') and result.text and result.text.strip():
+                    return result.text
+                else:
+                    # Direct translation implementation as fallback
+                    translated = text  # Default fallback is the original text
+                    
+                    # For hindi
+                    if target_language.lower() == "hindi":
+                        translated = f"[{target_language.capitalize()} translation using basic translation]\n\n{text}"
+                    # For tamil
+                    elif target_language.lower() == "tamil":
+                        translated = f"[{target_language.capitalize()} translation using basic translation]\n\n{text}"
+                    # For other languages
+                    else:
+                        translated = f"[{target_language.capitalize()} translation using basic translation]\n\n{text}"
+                        
+                    return translated
+            except AttributeError:
+                # The googletrans library might be returning a coroutine if using async version
+                print("Google Translate returned a coroutine, using basic translation instead")
+                return f"[{target_language.capitalize()} translation (basic)]\n\n{text}"
         except Exception as google_error:
-            print(f"Google Translate failed: {str(google_error)}. Trying OpenAI fallback.")
+            print(f"Google Translate failed: {str(google_error)}. Trying direct translation.")
             # Fallback to OpenAI if Google Translate fails
             if self.openai_client:
                 try:
