@@ -308,7 +308,277 @@ TRANSLATIONS = {
         "footer_tagline": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்"
     },
     
-    # Add more languages as needed
+    # Add basic templates for other Indian languages
+    
+    "bengali": {
+        # App title and description
+        "app_title": "⚖️ লাজিও - আইনি নথি সারাংশকারী",
+        "app_description": "AI-পাওয়ারড সারাংশ এবং অনুবাদের সাথে জটিল আইনি নথি সহজ করুন",
+        
+        # Common labels
+        "settings": "সেটিংস",
+        "summary_detail_level": "সারাংশ বিবরণ স্তর:",
+        "simple": "সহজ",
+        "detailed": "বিস্তারিত",
+        "output_language": "আউটপুট ভাষা:",
+        
+        # Document actions
+        "upload_prompt": "আইনি নথি আপলোড করুন",
+        "document_upload": "নথি আপলোড",
+        "summarize_document": "নথি সারাংশ করুন",
+        "document_information": "নথি তথ্য", 
+        "clear_all": "সব পরিষ্কার করুন",
+        
+        # Results display
+        "summary_results": "সারাংশ ফলাফল",
+        "simple_summary": "সহজ সারাংশ",
+        "detailed_summary": "বিস্তারিত সারাংশ",
+        "lawzio_capabilities": "লাজিও আপনাকে এতে সাহায্য করতে পারে:",
+        
+        # Footer
+        "footer": "লাজিও - সবার জন্য আইনি নথি অ্যাক্সেসযোগ্য করে তোলা",
+        "footer_tagline": "লাজিও - সবার জন্য আইনি নথি অ্যাক্সেসযোগ্য করে তোলা"
+    },
+    
+    "marathi": {
+        # App title and description
+        "app_title": "⚖️ लॉझिओ - कायदेशीर दस्तऐवज सारांशकर्ता",
+        "app_description": "AI-संचालित सारांश आणि अनुवादासह जटिल कायदेशीर दस्तऐवज सुलभ करा",
+        
+        # Common labels
+        "settings": "सेटिंग्ज",
+        "summary_detail_level": "सारांश तपशील पातळी:",
+        "simple": "साधे",
+        "detailed": "तपशीलवार",
+        "output_language": "आउटपुट भाषा:",
+        
+        # Document actions
+        "upload_prompt": "कायदेशीर दस्तऐवज अपलोड करा",
+        "document_upload": "दस्तऐवज अपलोड",
+        "summarize_document": "दस्तऐवजाचा सारांश करा",
+        "document_information": "दस्तऐवज माहिती", 
+        "clear_all": "सर्व साफ करा",
+        
+        # Results display
+        "summary_results": "सारांश परिणाम",
+        "simple_summary": "साधा सारांश",
+        "detailed_summary": "तपशीलवार सारांश",
+        "lawzio_capabilities": "लॉझिओ आपल्याला यामध्ये मदत करू शकते:",
+        
+        # Footer
+        "footer": "लॉझिओ - कायदेशीर दस्तऐवज सर्वांसाठी सुलभ करणे",
+        "footer_tagline": "लॉझिओ - कायदेशीर दस्तऐवज सर्वांसाठी सुलभ करणे"
+    },
+    
+    "telugu": {
+        # App title and description
+        "app_title": "⚖️ లాజియో - చట్టపరమైన పత్రాల సంక్షిప్తీకరణి",
+        "app_description": "AI-శక్తితో సారాంశం మరియు అనువాదంతో క్లిష్టమైన చట్టపరమైన పత్రాలను సరళీకరించండి",
+        
+        # Common labels
+        "settings": "సెట్టింగ్‌లు",
+        "summary_detail_level": "సారాంశ వివరాల స్థాయి:",
+        "simple": "సాధారణ",
+        "detailed": "వివరణాత్మక",
+        "output_language": "అవుట్‌పుట్ భాష:",
+        
+        # Document actions
+        "upload_prompt": "చట్టపరమైన పత్రాన్ని అప్‌లోడ్ చేయండి",
+        "document_upload": "పత్రం అప్‌లోడ్",
+        "summarize_document": "పత్రాన్ని సంక్షిప్తీకరించండి",
+        "document_information": "పత్రం సమాచారం", 
+        "clear_all": "అన్నింటినీ క్లియర్ చేయండి",
+        
+        # Results display
+        "summary_results": "సారాంశ ఫలితాలు",
+        "simple_summary": "సాధారణ సారాంశం",
+        "detailed_summary": "వివరణాత్మక సారాంశం",
+        "lawzio_capabilities": "లాజియో మీకు వీటిలో సహాయపడగలదు:",
+        
+        # Footer
+        "footer": "లాజియో - చట్టపరమైన పత్రాలను అందరికీ అందుబాటులో ఉంచడం",
+        "footer_tagline": "లాజియో - చట్టపరమైన పత్రాలను అందరికీ అందుబాటులో ఉంచడం"
+    },
+    
+    "gujarati": {
+        # App title and description
+        "app_title": "⚖️ લોઝિઓ - કાયદાકીય દસ્તાવેજ સારાંશકાર",
+        "app_description": "AI-સંચાલિત સારાંશ અને અનુવાદ સાથે જટિલ કાયદાકીય દસ્તાવેજોને સરળ બનાવો",
+        
+        # Common labels
+        "settings": "સેટિંગ્સ",
+        "summary_detail_level": "સારાંશ વિગત સ્તર:",
+        "simple": "સરળ",
+        "detailed": "વિગતવાર",
+        "output_language": "આઉટપુટ ભાષા:",
+        
+        # Document actions
+        "upload_prompt": "કાયદાકીય દસ્તાવેજ અપલોડ કરો",
+        "document_upload": "દસ્તાવેજ અપલોડ",
+        "summarize_document": "દસ્તાવેજનો સારાંશ કરો",
+        "document_information": "દસ્તાવેજ માહિતી", 
+        "clear_all": "બધું સાફ કરો",
+        
+        # Results display
+        "summary_results": "સારાંશ પરિણામો",
+        "simple_summary": "સરળ સારાંશ",
+        "detailed_summary": "વિગતવાર સારાંશ",
+        "lawzio_capabilities": "લોઝિઓ તમને આમાં મદદ કરી શકે છે:",
+        
+        # Footer
+        "footer": "લોઝિઓ - કાયદાકીય દસ્તાવેજોને દરેક માટે સુલભ બનાવવા",
+        "footer_tagline": "લોઝિઓ - કાયદાકીય દસ્તાવેજોને દરેક માટે સુલભ બનાવવા"
+    },
+    
+    "kannada": {
+        # App title and description
+        "app_title": "⚖️ ಲಾಜಿಯೋ - ಕಾನೂನು ದಾಖಲೆ ಸಾರಾಂಶಗಾರ",
+        "app_description": "AI-ಚಾಲಿತ ಸಾರಾಂಶ ಮತ್ತು ಅನುವಾದದೊಂದಿಗೆ ಸಂಕೀರ್ಣ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳಗೊಳಿಸಿ",
+        
+        # Common labels
+        "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+        "summary_detail_level": "ಸಾರಾಂಶ ವಿವರ ಮಟ್ಟ:",
+        "simple": "ಸರಳ",
+        "detailed": "ವಿವರವಾದ",
+        "output_language": "ಔಟ್‌ಪುಟ್ ಭಾಷೆ:",
+        
+        # Document actions
+        "upload_prompt": "ಕಾನೂನು ದಾಖಲೆಯನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+        "document_upload": "ದಾಖಲೆ ಅಪ್‌ಲೋಡ್",
+        "summarize_document": "ದಾಖಲೆಯನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ",
+        "document_information": "ದಾಖಲೆ ಮಾಹಿತಿ", 
+        "clear_all": "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ",
+        
+        # Results display
+        "summary_results": "ಸಾರಾಂಶ ಫಲಿತಾಂಶಗಳು",
+        "simple_summary": "ಸರಳ ಸಾರಾಂಶ",
+        "detailed_summary": "ವಿವರವಾದ ಸಾರಾಂಶ",
+        "lawzio_capabilities": "ಲಾಜಿಯೋ ನಿಮಗೆ ಇದರಲ್ಲಿ ಸಹಾಯ ಮಾಡಬಹುದು:",
+        
+        # Footer
+        "footer": "ಲಾಜಿಯೋ - ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಎಲ್ಲರಿಗೂ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡುವುದು",
+        "footer_tagline": "ಲಾಜಿಯೋ - ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಎಲ್ಲರಿಗೂ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡುವುದು"
+    },
+    
+    "malayalam": {
+        # App title and description
+        "app_title": "⚖️ ലാസിയോ - നിയമ രേഖ സംഗ്രഹകൻ",
+        "app_description": "AI-പവർഡ് സംഗ്രഹവും വിവർത്തനവും ഉപയോഗിച്ച് സങ്കീർണ്ണമായ നിയമ രേഖകൾ ലളിതമാക്കുക",
+        
+        # Common labels
+        "settings": "ക്രമീകരണങ്ങൾ",
+        "summary_detail_level": "സംഗ്രഹ വിശദാംശ തലം:",
+        "simple": "ലളിതമായ",
+        "detailed": "വിശദമായ",
+        "output_language": "ഔട്ട്പുട്ട് ഭാഷ:",
+        
+        # Document actions
+        "upload_prompt": "നിയമ രേഖ അപ്‌ലോഡ് ചെയ്യുക",
+        "document_upload": "രേഖ അപ്‌ലോഡ്",
+        "summarize_document": "രേഖ സംഗ്രഹിക്കുക",
+        "document_information": "രേഖാ വിവരങ്ങൾ", 
+        "clear_all": "എല്ലാം മായ്‌ക്കുക",
+        
+        # Results display
+        "summary_results": "സംഗ്രഹ ഫലങ്ങൾ",
+        "simple_summary": "ലളിതമായ സംഗ്രഹം",
+        "detailed_summary": "വിശദമായ സംഗ്രഹം",
+        "lawzio_capabilities": "ലാസിയോയ്ക്ക് നിങ്ങളെ ഇതിൽ സഹായിക്കാൻ കഴിയും:",
+        
+        # Footer
+        "footer": "ലാസിയോ - നിയമ രേഖകൾ എല്ലാവർക്കും ലഭ്യമാക്കുന്നു",
+        "footer_tagline": "ലാസിയോ - നിയമ രേഖകൾ എല്ലാവർക്കും ലഭ്യമാക്കുന്നു"
+    },
+    
+    "punjabi": {
+        # App title and description
+        "app_title": "⚖️ ਲਾਜ਼ੀਓ - ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ ਸੰਖੇਪਕਾਰ",
+        "app_description": "AI-ਸ਼ਕਤੀਸ਼ਾਲੀ ਸੰਖੇਪ ਅਤੇ ਅਨੁਵਾਦ ਨਾਲ ਜਟਿਲ ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਆਸਾਨ ਬਣਾਓ",
+        
+        # Common labels
+        "settings": "ਸੈਟਿੰਗਾਂ",
+        "summary_detail_level": "ਸੰਖੇਪ ਵੇਰਵਾ ਪੱਧਰ:",
+        "simple": "ਸਧਾਰਨ",
+        "detailed": "ਵਿਸਤਾਰਿਤ",
+        "output_language": "ਆਉਟਪੁੱਟ ਭਾਸ਼ਾ:",
+        
+        # Document actions
+        "upload_prompt": "ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ",
+        "document_upload": "ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ",
+        "summarize_document": "ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸੰਖੇਪ ਕਰੋ",
+        "document_information": "ਦਸਤਾਵੇਜ਼ ਜਾਣਕਾਰੀ", 
+        "clear_all": "ਸਭ ਸਾਫ਼ ਕਰੋ",
+        
+        # Results display
+        "summary_results": "ਸੰਖੇਪ ਨਤੀਜੇ",
+        "simple_summary": "ਸਧਾਰਨ ਸੰਖੇਪ",
+        "detailed_summary": "ਵਿਸਤਾਰਿਤ ਸੰਖੇਪ",
+        "lawzio_capabilities": "ਲਾਜ਼ੀਓ ਤੁਹਾਡੀ ਇਸ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ:",
+        
+        # Footer
+        "footer": "ਲਾਜ਼ੀਓ - ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਹਰ ਕਿਸੇ ਲਈ ਪਹੁੰਚਯੋਗ ਬਣਾਉਣਾ",
+        "footer_tagline": "ਲਾਜ਼ੀਓ - ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਹਰ ਕਿਸੇ ਲਈ ਪਹੁੰਚਯੋਗ ਬਣਾਉਣਾ"
+    },
+    
+    "urdu": {
+        # App title and description
+        "app_title": "⚖️ لازیو - قانونی دستاویز کا خلاصہ",
+        "app_description": "AI پر مبنی خلاصہ اور ترجمہ کے ساتھ پیچیدہ قانونی دستاویزات کو آسان بنائیں",
+        
+        # Common labels
+        "settings": "ترتیبات",
+        "summary_detail_level": "خلاصہ تفصیل کی سطح:",
+        "simple": "آسان",
+        "detailed": "تفصیلی",
+        "output_language": "آؤٹ پٹ زبان:",
+        
+        # Document actions
+        "upload_prompt": "قانونی دستاویز اپلوڈ کریں",
+        "document_upload": "دستاویز اپلوڈ",
+        "summarize_document": "دستاویز کا خلاصہ کریں",
+        "document_information": "دستاویز کی معلومات", 
+        "clear_all": "سب صاف کریں",
+        
+        # Results display
+        "summary_results": "خلاصہ نتائج",
+        "simple_summary": "آسان خلاصہ",
+        "detailed_summary": "تفصیلی خلاصہ",
+        "lawzio_capabilities": "لازیو آپ کی ان میں مدد کر سکتا ہے:",
+        
+        # Footer
+        "footer": "لازیو - قانونی دستاویزات کو سب کے لیے قابل رسائی بنانا",
+        "footer_tagline": "لازیو - قانونی دستاویزات کو سب کے لیے قابل رسائی بنانا"
+    },
+    
+    "odia": {
+        # App title and description
+        "app_title": "⚖️ ଲାଜିଓ - ଆଇନଗତ ଦଲିଲ ସାରାଂଶକାରୀ",
+        "app_description": "AI-ଶକ୍ତି ସାରାଂଶ ଏବଂ ଅନୁବାଦ ସହିତ ଜଟିଳ ଆଇନଗତ ଦଲିଲଗୁଡିକୁ ସରଳ କରନ୍ତୁ",
+        
+        # Common labels
+        "settings": "ସେଟିଂସ୍",
+        "summary_detail_level": "ସାରାଂଶ ବିବରଣୀ ସ୍ତର:",
+        "simple": "ସରଳ",
+        "detailed": "ବିସ୍ତୃତ",
+        "output_language": "ଆଉଟପୁଟ୍ ଭାଷା:",
+        
+        # Document actions
+        "upload_prompt": "ଆଇନଗତ ଦଲିଲ ଅପଲୋଡ୍ କରନ୍ତୁ",
+        "document_upload": "ଦଲିଲ ଅପଲୋଡ୍",
+        "summarize_document": "ଦଲିଲର ସାରାଂଶ କରନ୍ତୁ",
+        "document_information": "ଦଲିଲ ସୂଚନା", 
+        "clear_all": "ସବୁ ସଫା କରନ୍ତୁ",
+        
+        # Results display
+        "summary_results": "ସାରାଂଶ ଫଳାଫଳ",
+        "simple_summary": "ସରଳ ସାରାଂଶ",
+        "detailed_summary": "ବିସ୍ତୃତ ସାରାଂଶ",
+        "lawzio_capabilities": "ଲାଜିଓ ଆପଣଙ୍କୁ ଏଥିରେ ସାହାଯ୍ୟ କରିପାରିବ:",
+        
+        # Footer
+        "footer": "ଲାଜିଓ - ଆଇନଗତ ଦଲିଲଗୁଡିକୁ ସମସ୍ତଙ୍କ ପାଇଁ ସୁଲଭ କରିବା",
+        "footer_tagline": "ଲାଜିଓ - ଆଇନଗତ ଦଲିଲଗୁଡିକୁ ସମସ୍ତଙ୍କ ପାଇଁ ସୁଲଭ କରିବା"
+    }
 }
 
 def get_ui_text(key, language='english', *format_args):
