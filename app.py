@@ -56,9 +56,12 @@ with st.sidebar:
     # Language selection
     target_language = st.selectbox(
         "Output Language:",
-        ["English", "Hindi", "Tamil"],
-        index=0 if st.session_state.target_language == "english" else 
-              1 if st.session_state.target_language == "hindi" else 2
+        ["English", "Hindi", "Tamil", "Bengali", "Marathi", "Telugu", 
+         "Gujarati", "Kannada", "Malayalam", "Punjabi", "Urdu", "Odia"],
+        index=["english", "hindi", "tamil", "bengali", "marathi", "telugu",
+               "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"].index(st.session_state.target_language)
+        if st.session_state.target_language in ["english", "hindi", "tamil", "bengali", "marathi", "telugu",
+                                                "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"] else 0
     )
     st.session_state.target_language = target_language.lower()
     
@@ -92,8 +95,8 @@ with main_col1:
     
     uploaded_file = st.file_uploader(
         "Upload a legal document",
-        type=["pdf", "docx", "txt"],
-        help="Supported formats: PDF, DOCX, TXT"
+        type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
+        help="Supported formats: PDF, DOCX, TXT, and Images (JPG, PNG, TIFF, BMP)"
     )
     
     if uploaded_file is not None:
@@ -103,11 +106,15 @@ with main_col1:
                 st.session_state.document_text = process_document(uploaded_file)
                 st.success(f"Document '{uploaded_file.name}' processed successfully!")
                 
+                # Detect document language
+                detected_language = translation_helper.detect_language(st.session_state.document_text)
+                
                 # Show document info
                 st.markdown("#### Document Information")
                 st.markdown(f"**Filename:** {uploaded_file.name}")
                 st.markdown(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
                 st.markdown(f"**Content Length:** {len(st.session_state.document_text)} characters")
+                st.markdown(f"**Detected Language:** {detected_language.capitalize()}")
                 
                 # Show a preview
                 with st.expander("Document Preview"):
