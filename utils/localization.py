@@ -42,10 +42,43 @@ TRANSLATIONS = {
         "privacy_notice": "Privacy Notice",
         "privacy_content": """
         - All documents are processed securely
-        - Documents are not stored permanently
+        - Documents are stored with encryption options
         - AI processing is used for summarization
         - We recommend removing sensitive information
         """,
+        
+        # Privacy levels
+        "privacy_level": "Privacy Level",
+        "privacy_level_help": "Choose the level of privacy for document storage and processing",
+        "privacy_standard": "Standard",
+        "privacy_enhanced": "Enhanced",
+        "privacy_maximum": "Maximum",
+        "privacy_enhanced_info": "Enhanced privacy: Your document is stored with encryption.",
+        "privacy_maximum_info": "Maximum privacy: Your document is stored with encryption and risk factors are anonymized.",
+        
+        # Privacy settings
+        "privacy_settings": "Privacy & Security Settings",
+        "current_privacy_settings": "Current Settings",
+        "data_retention": "Data Retention",
+        "days": "days",
+        "text_anonymization": "Text Anonymization",
+        "encryption": "Encryption",
+        "access_token": "Access Token",
+        "update_privacy": "Update Privacy Settings",
+        "new_privacy_level": "New Privacy Level",
+        "new_retention": "Retention Period (days)",
+        "anonymize_text": "Anonymize sensitive information",
+        "encrypt_storage": "Enable storage encryption",
+        "update_settings": "Update Settings",
+        "settings_updated": "Privacy settings updated successfully",
+        "update_failed": "Failed to update privacy settings",
+        
+        # Document deletion
+        "delete_document": "Delete Document",
+        "delete_warning": "Warning: Document deletion is permanent and cannot be undone.",
+        "delete_confirm": "Delete Document and All Related Data",
+        "delete_success": "Document deleted successfully",
+        "delete_failed": "Failed to delete document",
         
         # Document upload
         "document_upload": "Document Upload",
