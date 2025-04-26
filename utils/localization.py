@@ -93,6 +93,7 @@ TRANSLATIONS = {
         
         # Sample capabilities
         "lawzio_can_help": "Lawzio Can Help You With:",
+        "lawzio_capabilities": "Lawzio Can Help You With:",
         "legal_judgments": "Legal Judgments",
         "contracts_agreements": "Contracts & Agreements",
         "court_orders": "Court Orders",
@@ -101,7 +102,8 @@ TRANSLATIONS = {
         "terms_conditions": "Terms & Conditions",
         
         # Footer
-        "footer": "Lawzio - Making legal documents accessible for everyone"
+        "footer": "Lawzio - Making legal documents accessible for everyone",
+        "footer_tagline": "Lawzio - Making legal documents accessible for everyone"
     },
     
     "hindi": {
@@ -192,6 +194,7 @@ TRANSLATIONS = {
         
         # Sample capabilities
         "lawzio_can_help": "लॉज़िओ आपकी इनमें मदद कर सकता है:",
+        "lawzio_capabilities": "लॉज़िओ आपकी इनमें मदद कर सकता है:",
         "legal_judgments": "कानूनी निर्णय",
         "contracts_agreements": "अनुबंध और समझौते",
         "court_orders": "न्यायालय के आदेश",
@@ -200,7 +203,8 @@ TRANSLATIONS = {
         "terms_conditions": "नियम और शर्तें",
         
         # Footer
-        "footer": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना"
+        "footer": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना",
+        "footer_tagline": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना"
     },
     
     "tamil": {
@@ -280,13 +284,18 @@ TRANSLATIONS = {
         
         # Results section
         "summary_results": "சுருக்க முடிவுகள்",
-        "summary_in": "{0} சுருக்கம் {1} இல்",
-        "translation_method_used": "பயன்படுத்தப்பட்ட மொழிபெயர்ப்பு முறை: **{0}**",
+        "simple_summary": "எளிய சுருக்கம்", 
+        "detailed_summary": "விரிவான சுருக்கம்",
+        "in_language": "{0} இல்",
+        "translation_method_used": "பயன்படுத்தப்பட்ட மொழிபெயர்ப்பு முறை",
         "download_summary": "சுருக்கத்தைப் பதிவிறக்கவும்",
-        "empty_state": "ஆவணத்தைப் பதிவேற்றி, முடிவுகளைக் காண 'ஆவணத்தை சுருக்கவும்' என்பதைக் கிளிக் செய்யவும்.",
+        "empty_state_msg": "ஆவணத்தைப் பதிவேற்றி, முடிவுகளைக் காண 'ஆவணத்தை சுருக்கவும்' என்பதைக் கிளிக் செய்யவும்.",
+        "failed": "தோல்வி",
+        "translation_error_title": "மொழிபெயர்ப்பு பிழை",
         
         # Sample capabilities
         "lawzio_can_help": "லாசியோ உங்களுக்கு இதில் உதவ முடியும்:",
+        "lawzio_capabilities": "லாசியோ உங்களுக்கு இதில் உதவ முடியும்:",
         "legal_judgments": "சட்ட தீர்ப்புகள்",
         "contracts_agreements": "ஒப்பந்தங்கள் & உடன்படிக்கைகள்",
         "court_orders": "நீதிமன்ற ஆணைகள்",
@@ -295,7 +304,8 @@ TRANSLATIONS = {
         "terms_conditions": "விதிமுறைகள் & நிபந்தனைகள்",
         
         # Footer
-        "footer": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்"
+        "footer": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்",
+        "footer_tagline": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்"
     },
     
     # Add more languages as needed
