@@ -250,6 +250,24 @@ else:
     )
     st.markdown('</div>', unsafe_allow_html=True)
     
+    # Privacy options
+    privacy_options = ["standard", "enhanced", "maximum"]
+    privacy_labels = [
+        get_ui_text("privacy_standard", st.session_state.ui_language, "Standard"),
+        get_ui_text("privacy_enhanced", st.session_state.ui_language, "Enhanced"),
+        get_ui_text("privacy_maximum", st.session_state.ui_language, "Maximum")
+    ]
+    
+    selected_privacy_label = st.radio(
+        get_ui_text("privacy_level", st.session_state.ui_language, "Privacy Level"),
+        privacy_labels,
+        help=get_ui_text("privacy_level_help", st.session_state.ui_language, 
+                        "Choose the level of privacy for document storage and processing")
+    )
+    
+    # Map display label back to internal value
+    selected_privacy = privacy_options[privacy_labels.index(selected_privacy_label)]
+    
     if uploaded_file is not None:
         try:
             with st.spinner(get_ui_text("processing_document", st.session_state.ui_language)):
@@ -269,24 +287,6 @@ else:
                     
                     # Get color for risk level
                     risk_color = get_risk_color(risk_level)
-                    
-                    # Get privacy level for document storage
-                    privacy_options = ["standard", "enhanced", "maximum"]
-                    privacy_labels = [
-                        get_ui_text("privacy_standard", st.session_state.ui_language, "Standard"),
-                        get_ui_text("privacy_enhanced", st.session_state.ui_language, "Enhanced"),
-                        get_ui_text("privacy_maximum", st.session_state.ui_language, "Maximum")
-                    ]
-                    
-                    privacy_level = st.radio(
-                        get_ui_text("privacy_level", st.session_state.ui_language, "Privacy Level"),
-                        privacy_labels,
-                        help=get_ui_text("privacy_level_help", st.session_state.ui_language, 
-                                         "Choose the level of privacy for document storage and processing")
-                    )
-                    
-                    # Map display label back to internal value
-                    selected_privacy = privacy_options[privacy_labels.index(privacy_level)]
                     
                     # Save document information to database with privacy settings
                     try:
