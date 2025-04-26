@@ -197,26 +197,32 @@ with main_col1:
                                 translation_helper.indic_translator is not None and \
                                 translation_helper.indic_translator.is_available
                                 
-                            # For Tamil or if IndicTrans is available for Indian languages
-                            # Check if OpenAI is having quota issues by checking if the summary
-                            # contains the message about quota exceeded
-                            openai_quota_exceeded = False
-                            if st.session_state.summary and "API quota exceeded" in st.session_state.summary:
-                                openai_quota_exceeded = True
-                                print("Detected OpenAI quota exceeded from summary, will not use for translation")
-                            
-                            if st.session_state.target_language == "tamil" and translation_helper.openai_client and not openai_quota_exceeded:
-                                st.session_state.translation_method_used = "OpenAI GPT-4o"
-                            elif indic_will_be_used:
-                                st.session_state.translation_method_used = "IndicTrans"
-                            else:
-                                st.session_state.translation_method_used = "Google Translate"
+                            # Let the translation helper decide which method to use
+                            # We'll get the method used from the translation response
+                            # The translation_helper.translate_text() function will try each method
+                            # in sequence and return which one was used
                                 
                             # Perform the translation
-                            st.session_state.translated_summary = translation_helper.translate_text(
+                            translated_text = translation_helper.translate_text(
                                 st.session_state.summary,
                                 st.session_state.target_language
                             )
+                            
+                            # Extract the translation method used from the response
+                            # Translation helper adds "Translation method used: METHOD" to the beginning
+                            if translated_text and "Translation method used:" in translated_text:
+                                # Split by newlines to get the first line
+                                first_line = translated_text.split('\n')[0]
+                                if "Translation method used:" in first_line:
+                                    # Extract the method name
+                                    method_part = first_line.split("Translation method used:")[1].strip()
+                                    st.session_state.translation_method_used = method_part
+                                    # Remove the method line from the translated text
+                                    translated_text = translated_text.replace(first_line, "").strip()
+                                    if translated_text.startswith('\n\n'):
+                                        translated_text = translated_text[2:]
+                            
+                            st.session_state.translated_summary = translated_text
                     except Exception as trans_error:
                         st.warning(f"Translation error: {str(trans_error)}. Showing original summary.")
                         st.session_state.translation_method_used = "Failed"
