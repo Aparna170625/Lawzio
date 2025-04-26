@@ -367,3 +367,163 @@ def get_document_summaries(document_id):
         return []
     finally:
         connection.close()
+
+def get_privacy_settings(document_id):
+    """
+    Get privacy settings for a document
+    
+    Args:
+        document_id (int): ID of the document
+        
+    Returns:
+        dict: Privacy settings or None if not found
+    """
+    connection = get_connection()
+    if not connection:
+        return None
+        
+    try:
+        with connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    """
+                    SELECT * FROM privacy_settings
+                    WHERE document_id = %s
+                    """,
+                    (document_id,)
+                )
+                return cursor.fetchone()
+    except Exception as e:
+        logger.error(f"Error getting privacy settings: {e}")
+        return None
+    finally:
+        connection.close()
+
+def update_privacy_settings(document_id, privacy_level=None, retention_days=None, 
+                          anonymize_text=None, encrypt_storage=None):
+    """
+    Update privacy settings for a document
+    
+    Args:
+        document_id (int): ID of the document
+        privacy_level (str, optional): Privacy level
+        retention_days (int, optional): Data retention period in days
+        anonymize_text (bool, optional): Whether to anonymize text
+        encrypt_storage (bool, optional): Whether to encrypt storage
+        
+    Returns:
+        bool: Success or failure
+    """
+    connection = get_connection()
+    if not connection:
+        return False
+        
+    try:
+        with connection:
+            with connection.cursor() as cursor:
+                # Only update provided fields
+                update_fields = []
+                params = []
+                
+                if privacy_level is not None:
+                    update_fields.append("privacy_level = %s")
+                    params.append(privacy_level)
+                    
+                if retention_days is not None:
+                    update_fields.append("retention_days = %s")
+                    params.append(retention_days)
+                    
+                if anonymize_text is not None:
+                    update_fields.append("anonymize_text = %s")
+                    params.append(anonymize_text)
+                    
+                if encrypt_storage is not None:
+                    update_fields.append("encrypt_storage = %s")
+                    params.append(encrypt_storage)
+                    
+                if not update_fields:
+                    return False
+                    
+                # Add document_id to params
+                params.append(document_id)
+                
+                cursor.execute(f"""
+                    UPDATE privacy_settings 
+                    SET {', '.join(update_fields)}
+                    WHERE document_id = %s
+                """, tuple(params))
+                
+                # Also update document_history privacy_level if provided
+                if privacy_level is not None:
+                    cursor.execute("""
+                        UPDATE document_history
+                        SET privacy_level = %s
+                        WHERE id = %s
+                    """, (privacy_level, document_id))
+                
+                return True
+    except Exception as e:
+        logger.error(f"Error updating privacy settings: {e}")
+        return False
+    finally:
+        connection.close()
+
+def delete_document_by_token(access_token):
+    """
+    Delete a document and all related data using its access token
+    
+    Args:
+        access_token (str): Document access token
+        
+    Returns:
+        bool: Success or failure
+    """
+    connection = get_connection()
+    if not connection:
+        return False
+        
+    try:
+        with connection:
+            with connection.cursor() as cursor:
+                # Find document_id by token
+                cursor.execute("""
+                    SELECT id FROM document_history
+                    WHERE access_token = %s
+                """, (access_token,))
+                
+                result = cursor.fetchone()
+                if not result:
+                    return False
+                    
+                document_id = result[0]
+                
+                # Delete risk factors
+                cursor.execute("""
+                    DELETE FROM risk_factors
+                    WHERE document_id = %s
+                """, (document_id,))
+                
+                # Delete summaries
+                cursor.execute("""
+                    DELETE FROM document_summaries
+                    WHERE document_id = %s
+                """, (document_id,))
+                
+                # Delete privacy settings
+                cursor.execute("""
+                    DELETE FROM privacy_settings
+                    WHERE document_id = %s
+                """, (document_id,))
+                
+                # Delete document
+                cursor.execute("""
+                    DELETE FROM document_history
+                    WHERE id = %s
+                """, (document_id,))
+                
+                return True
+    except Exception as e:
+        logger.error(f"Error deleting document: {e}")
+        return False
+    finally:
+        connection.close()

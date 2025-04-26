@@ -11,7 +11,11 @@ from utils.database import (
     save_document_summary, 
     get_recent_documents,
     get_document_with_risk_factors,
-    get_document_summaries
+    get_document_summaries,
+    get_document_text,
+    get_privacy_settings,
+    update_privacy_settings,
+    delete_document_by_token
 )
 
 # Set page configuration
@@ -266,7 +270,25 @@ else:
                     # Get color for risk level
                     risk_color = get_risk_color(risk_level)
                     
-                    # Save document information to database
+                    # Get privacy level for document storage
+                    privacy_options = ["standard", "enhanced", "maximum"]
+                    privacy_labels = [
+                        get_ui_text("privacy_standard", st.session_state.ui_language, "Standard"),
+                        get_ui_text("privacy_enhanced", st.session_state.ui_language, "Enhanced"),
+                        get_ui_text("privacy_maximum", st.session_state.ui_language, "Maximum")
+                    ]
+                    
+                    privacy_level = st.radio(
+                        get_ui_text("privacy_level", st.session_state.ui_language, "Privacy Level"),
+                        privacy_labels,
+                        help=get_ui_text("privacy_level_help", st.session_state.ui_language, 
+                                         "Choose the level of privacy for document storage and processing")
+                    )
+                    
+                    # Map display label back to internal value
+                    selected_privacy = privacy_options[privacy_labels.index(privacy_level)]
+                    
+                    # Save document information to database with privacy settings
                     try:
                         document_id = save_document_history(
                             filename=uploaded_file.name,
@@ -274,10 +296,21 @@ else:
                             document_language=detected_language,
                             risk_level=risk_level,
                             content_length=len(st.session_state.document_text),
-                            risk_factors=risk_factors
+                            risk_factors=risk_factors,
+                            document_text=st.session_state.document_text,  # Store the full text (will be encrypted if needed)
+                            privacy_level=selected_privacy
                         )
                         # Store document ID in session state for later use
                         st.session_state.document_id = document_id
+                        
+                        # Display privacy settings information
+                        if selected_privacy == "enhanced":
+                            st.info(get_ui_text("privacy_enhanced_info", st.session_state.ui_language, 
+                                              "Enhanced privacy: Your document is stored with encryption."))
+                        elif selected_privacy == "maximum":
+                            st.warning(get_ui_text("privacy_maximum_info", st.session_state.ui_language, 
+                                                 "Maximum privacy: Your document is stored with encryption and risk factors are anonymized."))
+                            
                     except Exception as db_error:
                         # If database save fails, just log and continue
                         # This ensures the app works even if database is not available
