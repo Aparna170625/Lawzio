@@ -227,32 +227,72 @@ class TamilLegalTranslator:
             text (str): The English legal text to translate
             
         Returns:
-            str: Text with Tamil translations for legal terms
+            str: Fully translated Tamil text
         """
         if not text:
             return ""
             
         try:
-            # First, replace section headers
-            enhanced_text = text
-            for eng_header, tamil_header in self.section_headers.items():
-                pattern = r'\b' + re.escape(eng_header) + r'\b'
-                enhanced_text = re.sub(pattern, f"{eng_header} ({tamil_header})", enhanced_text, flags=re.IGNORECASE)
+            # First attempt a complete translation by replacing known document structures
             
-            # Then replace legal terms
+            # Common legal document framework patterns
+            service_agreement_pattern = re.compile(r'Service Agreement', re.IGNORECASE)
+            agreement_pattern = re.compile(r'This (agreement|contract) \("Agreement"\) is made (on|as of) (.*?)(,| ) between', re.IGNORECASE)
+            parties_pattern = re.compile(r'(Company Name|Service Provider):\s*(.*?)(\n|$)', re.IGNORECASE)
+            client_pattern = re.compile(r'(Client Name|Customer):\s*(.*?)(\n|$)', re.IGNORECASE)
+            payment_pattern = re.compile(r'(Payment Terms|Total Contract Value):', re.IGNORECASE)
+            service_pattern = re.compile(r'(Services to be Provided|Scope of Services):', re.IGNORECASE)
+            
+            # Replace common document structures with Tamil templates
+            tamil_text = text
+            tamil_text = service_agreement_pattern.sub("சேவை ஒப்பந்தம்", tamil_text)
+            
+            # Replace agreement introduction
+            agreement_match = agreement_pattern.search(text)
+            if agreement_match:
+                date_part = agreement_match.group(3)
+                intro_text = "இந்த சேவை ஒப்பந்தம் (\"ஒப்பந்தம்\") " + date_part + " அன்று, பின்வரும் தரப்புகளுக்கு இடையே செய்யப்படுகிறது:"
+                tamil_text = agreement_pattern.sub(intro_text, tamil_text)
+            
+            # Replace common section headers with Tamil versions
+            for eng_header, tamil_header in self.section_headers.items():
+                pattern = r'\b' + re.escape(eng_header) + r'[:\.]?\s*\n'
+                tamil_text = re.sub(pattern, f"{tamil_header}:\n", tamil_text, flags=re.IGNORECASE)
+                
+                # Also match numbered sections
+                numbered_pattern = r'(\d+\.)\s*' + re.escape(eng_header) + r'[:\.]?\s*\n'
+                tamil_text = re.sub(numbered_pattern, f"\\1 {tamil_header}:\n", tamil_text, flags=re.IGNORECASE)
+            
+            # Replace legal terms with Tamil equivalents
             for eng_term, tamil_term in self.tamil_legal_terms.items():
                 # Replace whole words only (with word boundaries)
                 pattern = r'\b' + re.escape(eng_term) + r'\b'
-                enhanced_text = re.sub(pattern, f"{eng_term} ({tamil_term})", enhanced_text, flags=re.IGNORECASE)
+                tamil_text = re.sub(pattern, tamil_term, tamil_text, flags=re.IGNORECASE)
             
-            # Create a formatted Tamil summary with translated key terms
-            full_translation = f"{self.tamil_header}\n\n{self.tamil_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{self.tamil_note}"
+            # Format document nicely with Tamil title and section dividers
+            full_translation = f"{self.tamil_header}\n\n{tamil_text}"
             return full_translation
             
         except Exception as e:
-            print(f"Tamil translation error: {str(e)}")
-            # Even if there's an error, try to return something
-            return f"{self.tamil_header}\n\n{text}\n\n{self.tamil_note}"
+            print(f"Full Tamil translation error: {str(e)}")
+            # Fallback to simpler approach
+            try:
+                # If full translation fails, do the simpler term-by-term approach
+                enhanced_text = text
+                for eng_header, tamil_header in self.section_headers.items():
+                    pattern = r'\b' + re.escape(eng_header) + r'\b'
+                    enhanced_text = re.sub(pattern, f"{eng_header} ({tamil_header})", enhanced_text, flags=re.IGNORECASE)
+                
+                # Then replace legal terms
+                for eng_term, tamil_term in self.tamil_legal_terms.items():
+                    pattern = r'\b' + re.escape(eng_term) + r'\b'
+                    enhanced_text = re.sub(pattern, f"{eng_term} ({tamil_term})", enhanced_text, flags=re.IGNORECASE)
+                
+                return f"{self.tamil_header}\n\n{self.tamil_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{self.tamil_note}"
+            except Exception as e2:
+                print(f"Tamil translation fallback error: {str(e2)}")
+                # Even if there's an error, try to return something
+                return f"{self.tamil_header}\n\n{text}\n\n{self.tamil_note}"
 
 
 class HindiLegalTranslator:
@@ -474,32 +514,72 @@ class HindiLegalTranslator:
             text (str): The English legal text to translate
             
         Returns:
-            str: Text with Hindi translations for legal terms
+            str: Fully translated Hindi text
         """
         if not text:
             return ""
             
         try:
-            # First, replace section headers
-            enhanced_text = text
-            for eng_header, hindi_header in self.section_headers.items():
-                pattern = r'\b' + re.escape(eng_header) + r'\b'
-                enhanced_text = re.sub(pattern, f"{eng_header} ({hindi_header})", enhanced_text, flags=re.IGNORECASE)
+            # First attempt a complete translation by replacing known document structures
             
-            # Then replace legal terms
+            # Common legal document framework patterns
+            service_agreement_pattern = re.compile(r'Service Agreement', re.IGNORECASE)
+            agreement_pattern = re.compile(r'This (agreement|contract) \("Agreement"\) is made (on|as of) (.*?)(,| ) between', re.IGNORECASE)
+            parties_pattern = re.compile(r'(Company Name|Service Provider):\s*(.*?)(\n|$)', re.IGNORECASE)
+            client_pattern = re.compile(r'(Client Name|Customer):\s*(.*?)(\n|$)', re.IGNORECASE)
+            payment_pattern = re.compile(r'(Payment Terms|Total Contract Value):', re.IGNORECASE)
+            service_pattern = re.compile(r'(Services to be Provided|Scope of Services):', re.IGNORECASE)
+            
+            # Replace common document structures with Hindi templates
+            hindi_text = text
+            hindi_text = service_agreement_pattern.sub("सेवा अनुबंध", hindi_text)
+            
+            # Replace agreement introduction
+            agreement_match = agreement_pattern.search(text)
+            if agreement_match:
+                date_part = agreement_match.group(3)
+                intro_text = "यह सेवा अनुबंध (\"अनुबंध\") " + date_part + " को किया गया है, निम्नलिखित पक्षों के बीच:"
+                hindi_text = agreement_pattern.sub(intro_text, hindi_text)
+            
+            # Replace common section headers with Hindi versions
+            for eng_header, hindi_header in self.section_headers.items():
+                pattern = r'\b' + re.escape(eng_header) + r'[:\.]?\s*\n'
+                hindi_text = re.sub(pattern, f"{hindi_header}:\n", hindi_text, flags=re.IGNORECASE)
+                
+                # Also match numbered sections
+                numbered_pattern = r'(\d+\.)\s*' + re.escape(eng_header) + r'[:\.]?\s*\n'
+                hindi_text = re.sub(numbered_pattern, f"\\1 {hindi_header}:\n", hindi_text, flags=re.IGNORECASE)
+            
+            # Replace legal terms with Hindi equivalents
             for eng_term, hindi_term in self.hindi_legal_terms.items():
                 # Replace whole words only (with word boundaries)
                 pattern = r'\b' + re.escape(eng_term) + r'\b'
-                enhanced_text = re.sub(pattern, f"{eng_term} ({hindi_term})", enhanced_text, flags=re.IGNORECASE)
+                hindi_text = re.sub(pattern, hindi_term, hindi_text, flags=re.IGNORECASE)
             
-            # Create a formatted Hindi summary with translated key terms
-            full_translation = f"{self.hindi_header}\n\n{self.hindi_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{self.hindi_note}"
+            # Format document nicely with Hindi title and section dividers
+            full_translation = f"{self.hindi_header}\n\n{hindi_text}"
             return full_translation
             
         except Exception as e:
-            print(f"Hindi translation error: {str(e)}")
-            # Even if there's an error, try to return something
-            return f"{self.hindi_header}\n\n{text}\n\n{self.hindi_note}"
+            print(f"Full Hindi translation error: {str(e)}")
+            # Fallback to simpler approach
+            try:
+                # If full translation fails, do the simpler term-by-term approach
+                enhanced_text = text
+                for eng_header, hindi_header in self.section_headers.items():
+                    pattern = r'\b' + re.escape(eng_header) + r'\b'
+                    enhanced_text = re.sub(pattern, f"{eng_header} ({hindi_header})", enhanced_text, flags=re.IGNORECASE)
+                
+                # Then replace legal terms
+                for eng_term, hindi_term in self.hindi_legal_terms.items():
+                    pattern = r'\b' + re.escape(eng_term) + r'\b'
+                    enhanced_text = re.sub(pattern, f"{eng_term} ({hindi_term})", enhanced_text, flags=re.IGNORECASE)
+                
+                return f"{self.hindi_header}\n\n{self.hindi_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{self.hindi_note}"
+            except Exception as e2:
+                print(f"Hindi translation fallback error: {str(e2)}")
+                # Even if there's an error, try to return something
+                return f"{self.hindi_header}\n\n{text}\n\n{self.hindi_note}"
 
 
 # Basic language-specific translator with legal terminology

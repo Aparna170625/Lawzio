@@ -7,6 +7,7 @@ from langdetect import detect, LangDetectException
 
 # Import our direct translators
 from utils.direct_translator import get_translator, TamilLegalTranslator, HindiLegalTranslator, BasicLegalTranslator
+from utils.google_translate import translate_text as google_translate
 
 # Try to import IndicTranslator
 try:
@@ -165,20 +166,35 @@ class TranslationHelper:
         
         # Use a simpler approach - try each method in sequence until one works
         
-        # Use our specialized direct translators - most reliable and no API dependency
-        translator = get_translator(lang_code)
-        if translator:
-            try:
-                print(f"Using direct translator for {target_language}")
-                if isinstance(translator, TamilLegalTranslator):
-                    translated_text = translator.translate(text)
-                    translation_method = "Enhanced Tamil Template"
-                else:
-                    translated_text = translator.translate(text)
-                    translation_method = f"Direct {target_language.capitalize()} Translation"
-            except Exception as e:
-                print(f"Direct translator failed: {str(e)}")
-                translated_text = None
+        # Method 1: Try Google Translate first for full text translation
+        try:
+            print(f"Using Google Translate API for {target_language}")
+            google_result = google_translate(text, lang_code, 'en')
+            if google_result and google_result != text:
+                translated_text = google_result
+                translation_method = "Google Translate API"
+        except Exception as e:
+            print(f"Google Translate API failed: {str(e)}")
+            translated_text = None
+                
+        # Method 2: Use our specialized direct translators as fallback
+        if not translated_text:
+            translator = get_translator(lang_code)
+            if translator:
+                try:
+                    print(f"Using direct translator for {target_language}")
+                    if isinstance(translator, TamilLegalTranslator):
+                        translated_text = translator.translate(text)
+                        translation_method = "Enhanced Tamil Template"
+                    elif isinstance(translator, HindiLegalTranslator):
+                        translated_text = translator.translate(text)
+                        translation_method = "Enhanced Hindi Template"
+                    else:
+                        translated_text = translator.translate(text)
+                        translation_method = f"Direct {target_language.capitalize()} Translation"
+                except Exception as e:
+                    print(f"Direct translator failed: {str(e)}")
+                    translated_text = None
                 
         # Method 5: Basic language formatter with proper headers and formatting
         if not translated_text:
