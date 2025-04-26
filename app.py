@@ -118,30 +118,7 @@ with st.sidebar:
     st.markdown(f"### {get_ui_text('about_lawzio', st.session_state.ui_language)}")
     st.markdown(get_ui_text('about_description', st.session_state.ui_language))
     
-    # Show translation capabilities
-    st.divider()
-    st.markdown(f"### {get_ui_text('translation_methods', st.session_state.ui_language)}")
-    
-    # Show which translation methods are available
-    if 'translation_methods' in st.session_state:
-        methods = []
-        if st.session_state.translation_methods.get('indictrans', False):
-            methods.append(get_ui_text('indictrans_available', st.session_state.ui_language))
-        else:
-            methods.append(get_ui_text('indictrans_unavailable', st.session_state.ui_language))
-            
-        if st.session_state.translation_methods.get('openai', False):
-            methods.append(get_ui_text('openai_available', st.session_state.ui_language))
-        else:
-            methods.append(get_ui_text('openai_unavailable', st.session_state.ui_language))
-            
-        if st.session_state.translation_methods.get('google', False):
-            methods.append(get_ui_text('google_available', st.session_state.ui_language))
-        else:
-            methods.append(get_ui_text('google_unavailable', st.session_state.ui_language))
-        
-        for method in methods:
-            st.markdown(method)
+    # Translation methods section removed as requested
     
     # Privacy notice
     st.divider()
