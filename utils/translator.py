@@ -179,7 +179,42 @@ class TranslationHelper:
                 print(f"IndicTrans translation failed: {str(e)}")
                 translated_text = None
         
-        # Method 2: OpenAI for Tamil specifically (and as a second option for others)
+        # Method 2: Google Translate API (reliable and doesn't require API key)
+        if not translated_text:
+            try:
+                print(f"Using Google Translate for {source_language} to {target_language} translation")
+                # Get language codes for Google Translate
+                src_code = 'en'  # Default source is English for summaries
+                dest_code = self.languages.get(target_language.lower(), 'en')
+                
+                # Use Google Translate API
+                translation = self.google_translator.translate(
+                    text=text,
+                    src=src_code,
+                    dest=dest_code
+                )
+                
+                # Make sure we get a proper translation object back
+                if hasattr(translation, 'text') and translation.text:
+                    translated_text = translation.text
+                    translation_method = "Google Translate"
+                else:
+                    # Handle case where translation is a coroutine (async response)
+                    if hasattr(translation, '__await__'):
+                        print("Google Translate returned a coroutine, cannot process")
+                        translated_text = None
+                    else:
+                        # Try to extract text from whatever was returned
+                        try:
+                            translated_text = str(translation)
+                            translation_method = "Google Translate"
+                        except:
+                            translated_text = None
+            except Exception as e:
+                print(f"Google Translate failed: {str(e)}")
+                translated_text = None
+        
+        # Method 3: OpenAI for Tamil specifically (and as a third option for others)
         if not translated_text and self.openai_available and self.openai_client:
             try:
                 print(f"Using OpenAI for {source_language} to {target_language} translation")
@@ -209,7 +244,7 @@ class TranslationHelper:
                     print(f"OpenAI translation failed: {error_str}")
                 translated_text = None
         
-        # Method 3: Use a comprehensive local translator for Tamil
+        # Method 4: Use a comprehensive local translator for Tamil
         if not translated_text and target_language.lower() == "tamil":
             try:
                 print(f"Using enhanced Tamil local translation")
@@ -293,7 +328,7 @@ class TranslationHelper:
                 print(f"Enhanced Tamil translation failed: {str(e)}")
                 translated_text = None
                 
-        # Method 4: Direct translation with basic templates (fallback for all languages)
+        # Method 5: Direct translation with basic templates (fallback for all languages)
         if not translated_text:
             try:
                 print(f"Using direct translation for {target_language}")

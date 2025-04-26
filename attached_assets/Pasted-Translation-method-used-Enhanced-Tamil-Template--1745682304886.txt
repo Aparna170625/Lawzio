@@ -1,0 +1,31 @@
+Translation method used: Enhanced Tamil Template
+
+சட்ட ஆவண சுருக்கம்
+
+இந்த சட்ட ஆவணத்தின் சுருக்கம் பின்வருமாறு:
+
+⚠️ API Unavailable: OpenAI API error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-svcac***************************************************************************O-T3. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+
+Basic document (ஆவணம்) Analysis
+
+document (ஆவணம்) Statistics:
+
+Word Count: 303
+Sentence Count: 24
+document (ஆவணம்) Introduction: Service agreement (ஒப்பந்தம்) This Service agreement (ஒப்பந்தம்) ("agreement (ஒப்பந்தம்)") is entered into on April 26, 2025, between: Company Name: Nexora Solutions Pvt. Ltd. ("Service Provider") client (வாடிக்கையாளர்) Name: Avantech Retail Pvt.
+
+Key terms (விதிமுறைகள்) (by frequency): service, client (வாடிக்கையாளர்), shall, agreement (ஒப்பந்தம்), services, provider, project, payment (கட்டணம்), agreement (ஒப்பந்தம்)., termination (முடிவுறுத்தல்)
+
+Detected Sections: Scope: Scope of Services - Full-stack web application development - Database optimization - Project management consultancy - Bi-weekly progress reports...
+
+agreement (ஒப்பந்தம்): agreement (ஒப்பந்தம்) This Service agreement (ஒப்பந்தம்) ("agreement (ஒப்பந்தம்)") is entered into on April 26, 2025, between: Company Name: Nexora Solutions Pvt. Ltd. ("Service Provider") client (வாடிக்கையாளர்) Name: Avantech Retail Pvt. Ltd. ("client (வாடிக்கையாளர்)...
+
+terms (விதிமுறைகள்): terms (விதிமுறைகள்) - Total contract (ஒப்பந்தம்) value: INR 15,00,000 (Fifteen Lakhs INR). - payment (கட்டணம்) milestones: - 30% advance on signing the agreement (ஒப்பந்தம்). - 40% upon mid-project delivery. - 30% after final project completion. -...
+
+rights (உரிமைகள்): rights (உரிமைகள்). 6. Limitation of liability (பொறுப்பு) Except for cases of gross negligence or willful misconduct, neither party (கட்சி) shall be liable for indirect, special, or consequential damages (இழப்பீடுகள்) arising out of this Agreeme...
+
+Governing law (சட்டம்): Governing law (சட்டம்) and dispute (சர்ச்சை) Resolution This agreement (ஒப்பந்தம்) shall be governed by the laws of Tamil Nadu, India. Any disputes shall be resolved through binding arbitration (நடுவர் தீர்ப்பு) under the Indian arbitration (நடுவர் தீர்ப்பு) and Conc...
+
+Note: This is a basic analysis produced without AI. For full AI-powered summarization, please provide a valid OpenAI API key.
+
+குறிப்பு: இது முழுமையான மொழிபெயர்ப்பு அல்ல, மேலும் முக்கிய சட்ட சொற்களுக்கான பொருள் மட்டுமே வழங்கப்படுகிறது.
