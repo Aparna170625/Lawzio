@@ -208,9 +208,9 @@ with top_col1:
     st.markdown("<p class='subtitle'>Multilingual Legal Document Analysis & Summarization</p>", unsafe_allow_html=True)
 
 with top_col2:
-    # UI Language selection in top right
+    # UI Language selection in top right - ONLY INDIAN LANGUAGES + ENGLISH
     st.markdown("<h3 style='margin-bottom:5px;'>Interface Language</h3>", unsafe_allow_html=True)
-    ui_lang_options = ["english", "hindi", "tamil", "spanish", "french", "german"]
+    ui_lang_options = ["english", "hindi", "tamil", "bengali", "marathi", "telugu", "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"]
     ui_lang_index = ui_lang_options.index(st.session_state.ui_language) if st.session_state.ui_language in ui_lang_options else 0
     
     new_ui_lang = st.selectbox(
@@ -307,11 +307,11 @@ with tab1:
             
             with col1:
                 st.subheader("Target Language")
+                # ONLY INDIAN LANGUAGES + ENGLISH
                 language_options = [
                     "english", "hindi", "tamil", "bengali", "marathi", 
                     "telugu", "gujarati", "kannada", "malayalam", 
-                    "punjabi", "urdu", "odia", "spanish", "french", 
-                    "german", "chinese", "japanese", "arabic"
+                    "punjabi", "urdu", "odia"
                 ]
                 
                 st.session_state.target_language = st.selectbox(
