@@ -380,20 +380,50 @@ with tab1:
         # DOCUMENT ANALYSIS SCREEN
         # This section shows after a document is uploaded and processed
         
-        # Add a clear button at the top
-        if st.button("⬅️ Upload another document", type="secondary"):
-            st.session_state.document_text = None
-            st.session_state.summary = None
-            st.session_state.translated_summary = None
-            st.session_state.risk_level = None
-            st.session_state.risk_factors = []
-            st.rerun()
+        # Add a clear button at the top - translate if needed
+        if st.session_state.target_language != "english":
+            try:
+                upload_another_text = translation_helper.translate_text("Upload another document", st.session_state.target_language)
+                if st.button(f"⬅️ {upload_another_text}", type="secondary"):
+                    st.session_state.document_text = None
+                    st.session_state.summary = None
+                    st.session_state.translated_summary = None
+                    st.session_state.risk_level = None
+                    st.session_state.risk_factors = []
+                    st.rerun()
+            except Exception as e:
+                # Fallback to English
+                if st.button("⬅️ Upload another document", type="secondary"):
+                    st.session_state.document_text = None
+                    st.session_state.summary = None
+                    st.session_state.translated_summary = None
+                    st.session_state.risk_level = None
+                    st.session_state.risk_factors = []
+                    st.rerun()
+        else:
+            # Use English
+            if st.button("⬅️ Upload another document", type="secondary"):
+                st.session_state.document_text = None
+                st.session_state.summary = None
+                st.session_state.translated_summary = None
+                st.session_state.risk_level = None
+                st.session_state.risk_factors = []
+                st.rerun()
         
         # Two column layout for analysis results
         col1, col2 = st.columns([1, 1.5])
         
         with col1:
-            st.header("Document Information")
+            # Translate "Document Information" header if needed
+            if st.session_state.target_language != "english":
+                try:
+                    doc_info_heading = translation_helper.translate_text("Document Information", st.session_state.target_language)
+                    st.header(doc_info_heading)
+                except Exception as e:
+                    # Fallback to English
+                    st.header("Document Information")
+            else:
+                st.header("Document Information")
             
             # Create two columns for basic info and risk assessment
             info_col1, info_col2 = st.columns(2)
@@ -403,10 +433,39 @@ with tab1:
                 if hasattr(st.session_state, 'document_id') and st.session_state.document_id:
                     doc_info = get_document_with_risk_factors(st.session_state.document_id)
                     if doc_info:
-                        st.markdown(f"**Filename:** {doc_info['filename']}")
-                        st.markdown(f"**Size:** {doc_info['file_size_kb']} KB")
-                        st.markdown(f"**Language:** {doc_info['document_language'].capitalize()}")
-                        st.markdown(f"**Content Length:** {doc_info['content_length']} characters")
+                        # Translate document info labels if needed
+                        if st.session_state.target_language != "english":
+                            try:
+                                # Translate document information labels
+                                filename_text = translation_helper.translate_text("Filename", st.session_state.target_language)
+                                size_text = translation_helper.translate_text("Size", st.session_state.target_language)
+                                language_text = translation_helper.translate_text("Language", st.session_state.target_language)
+                                content_length_text = translation_helper.translate_text("Content Length", st.session_state.target_language)
+                                characters_text = translation_helper.translate_text("characters", st.session_state.target_language)
+                                
+                                # Get translated language name
+                                language_name = translation_helper.translate_text(
+                                    doc_info['document_language'].capitalize(),
+                                    st.session_state.target_language
+                                )
+                                
+                                # Display translated document info
+                                st.markdown(f"**{filename_text}:** {doc_info['filename']}")
+                                st.markdown(f"**{size_text}:** {doc_info['file_size_kb']} KB")
+                                st.markdown(f"**{language_text}:** {language_name}")
+                                st.markdown(f"**{content_length_text}:** {doc_info['content_length']} {characters_text}")
+                            except Exception as e:
+                                # Fallback to English
+                                st.markdown(f"**Filename:** {doc_info['filename']}")
+                                st.markdown(f"**Size:** {doc_info['file_size_kb']} KB")
+                                st.markdown(f"**Language:** {doc_info['document_language'].capitalize()}")
+                                st.markdown(f"**Content Length:** {doc_info['content_length']} characters")
+                        else:
+                            # Display in English
+                            st.markdown(f"**Filename:** {doc_info['filename']}")
+                            st.markdown(f"**Size:** {doc_info['file_size_kb']} KB")
+                            st.markdown(f"**Language:** {doc_info['document_language'].capitalize()}")
+                            st.markdown(f"**Content Length:** {doc_info['content_length']} characters")
             
             # Show risk assessment
             with info_col2:
@@ -418,33 +477,139 @@ with tab1:
                     risk_class = "risk-medium"
                 
                 if risk_level:
-                    st.markdown(f"""
-                    <div class="{risk_class}">
-                    🛡️ Risk Level: {risk_level}
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Translate risk level if needed
+                    if st.session_state.target_language != "english":
+                        try:
+                            # Translate the risk level
+                            translated_risk_level = translation_helper.translate_text(
+                                risk_level,
+                                st.session_state.target_language
+                            )
+                            
+                            # Translate "Risk Level" text
+                            risk_level_text = translation_helper.translate_text(
+                                "Risk Level",
+                                st.session_state.target_language
+                            )
+                            
+                            st.markdown(f"""
+                            <div class="{risk_class}">
+                            🛡️ {risk_level_text}: {translated_risk_level}
+                            </div>
+                            """, unsafe_allow_html=True)
+                        except Exception as e:
+                            # Fallback to English if translation fails
+                            st.markdown(f"""
+                            <div class="{risk_class}">
+                            🛡️ Risk Level: {risk_level}
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div class="{risk_class}">
+                        🛡️ Risk Level: {risk_level}
+                        </div>
+                        """, unsafe_allow_html=True)
                 
                 if hasattr(st.session_state, 'risk_factors') and st.session_state.risk_factors:
-                    st.markdown("**Risk Factors Detected:**")
-                    for factor in st.session_state.risk_factors:
-                        st.markdown(f"• {factor}")
+                    # Translate risk factors heading and factors if needed
+                    if st.session_state.target_language != "english":
+                        try:
+                            # Translate "Risk Factors Detected" text
+                            risk_factors_text = translation_helper.translate_text(
+                                "Risk Factors Detected",
+                                st.session_state.target_language
+                            )
+                            
+                            st.markdown(f"**{risk_factors_text}:**")
+                            
+                            # Translate each risk factor
+                            for factor in st.session_state.risk_factors:
+                                translated_factor = translation_helper.translate_text(
+                                    factor,
+                                    st.session_state.target_language
+                                )
+                                st.markdown(f"• {translated_factor}")
+                        except Exception as e:
+                            # Fallback to English if translation fails
+                            st.markdown("**Risk Factors Detected:**")
+                            for factor in st.session_state.risk_factors:
+                                st.markdown(f"• {factor}")
+                    else:
+                        st.markdown("**Risk Factors Detected:**")
+                        for factor in st.session_state.risk_factors:
+                            st.markdown(f"• {factor}")
                 else:
-                    st.markdown("**No risk factors detected**")
+                    # Translate "No risk factors detected" if needed
+                    if st.session_state.target_language != "english":
+                        try:
+                            no_risk_text = translation_helper.translate_text(
+                                "No risk factors detected",
+                                st.session_state.target_language
+                            )
+                            st.markdown(f"**{no_risk_text}**")
+                        except Exception as e:
+                            # Fallback to English
+                            st.markdown("**No risk factors detected**")
+                    else:
+                        st.markdown("**No risk factors detected**")
             
-            # Show document preview
-            st.subheader("Document Preview")
-            with st.expander("Show document text", expanded=False):
-                if st.session_state.document_text:
-                    preview_text = st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text
-                    st.markdown(preview_text)
+            # Show document preview - translate if needed
+            if st.session_state.target_language != "english":
+                try:
+                    # Translate document preview heading and button
+                    preview_heading = translation_helper.translate_text("Document Preview", st.session_state.target_language)
+                    show_text_button = translation_helper.translate_text("Show document text", st.session_state.target_language)
+                    
+                    st.subheader(preview_heading)
+                    with st.expander(show_text_button, expanded=False):
+                        if st.session_state.document_text:
+                            preview_text = st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text
+                            st.markdown(preview_text)
+                except Exception as e:
+                    # Fallback to English
+                    st.subheader("Document Preview")
+                    with st.expander("Show document text", expanded=False):
+                        if st.session_state.document_text:
+                            preview_text = st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text
+                            st.markdown(preview_text)
+            else:
+                # Use English
+                st.subheader("Document Preview")
+                with st.expander("Show document text", expanded=False):
+                    if st.session_state.document_text:
+                        preview_text = st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text
+                        st.markdown(preview_text)
             
-            # Generate summary button
-            st.subheader("Generate Summary")
-            summarize_button = st.button(
-                "SUMMARIZE DOCUMENT", 
-                type="primary",
-                use_container_width=True
-            )
+            # Generate summary button - translate if needed
+            if st.session_state.target_language != "english":
+                try:
+                    # Translate generate summary heading and button
+                    summary_heading = translation_helper.translate_text("Generate Summary", st.session_state.target_language)
+                    summary_button_text = translation_helper.translate_text("SUMMARIZE DOCUMENT", st.session_state.target_language)
+                    
+                    st.subheader(summary_heading)
+                    summarize_button = st.button(
+                        summary_button_text,
+                        type="primary",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    # Fallback to English
+                    st.subheader("Generate Summary")
+                    summarize_button = st.button(
+                        "SUMMARIZE DOCUMENT", 
+                        type="primary",
+                        use_container_width=True
+                    )
+            else:
+                # Use English
+                st.subheader("Generate Summary")
+                summarize_button = st.button(
+                    "SUMMARIZE DOCUMENT", 
+                    type="primary",
+                    use_container_width=True
+                )
             
             if summarize_button:
                 try:
@@ -494,45 +659,143 @@ with tab1:
                     st.error(f"Error generating summary: {str(e)}")
         
         with col2:
-            st.header("Summary Results")
+            # Translate the "Summary Results" heading if needed
+            if st.session_state.target_language != "english":
+                try:
+                    summary_results_heading = translation_helper.translate_text("Summary Results", st.session_state.target_language)
+                    st.header(summary_results_heading)
+                except Exception as e:
+                    st.header("Summary Results")
+            else:
+                st.header("Summary Results")
             
             if st.session_state.translated_summary:
-                # Show summary details
-                st.subheader(f"{st.session_state.detail_level.capitalize()} Summary in {st.session_state.target_language.capitalize()}")
+                # Show summary details with translated heading
+                if st.session_state.target_language != "english":
+                    try:
+                        # Translate "Summary in" text
+                        summary_in_text = translation_helper.translate_text("Summary in", st.session_state.target_language)
+                        detail_level_translated = translation_helper.translate_text(
+                            st.session_state.detail_level.capitalize(),
+                            st.session_state.target_language
+                        )
+                        language_name = st.session_state.target_language.capitalize()
+                        
+                        st.subheader(f"{detail_level_translated} {summary_in_text} {language_name}")
+                    except Exception as e:
+                        # Fallback to English format with capitalized language name
+                        st.subheader(f"{st.session_state.detail_level.capitalize()} Summary in {st.session_state.target_language.capitalize()}")
+                else:
+                    st.subheader(f"{st.session_state.detail_level.capitalize()} Summary in {st.session_state.target_language.capitalize()}")
                 
                 # Create a container with a scrollable area for the summary
                 summary_container = st.container(height=500)
                 with summary_container:
                     st.markdown(st.session_state.translated_summary)
                 
-                # Download button for summary
-                st.download_button(
-                    label="Download Summary",
-                    data=st.session_state.translated_summary,
-                    file_name=f"summary_{st.session_state.target_language}_{st.session_state.detail_level}.txt",
-                    mime="text/plain"
-                )
+                # Download button for summary with translated label
+                if st.session_state.target_language != "english":
+                    try:
+                        download_button_text = translation_helper.translate_text("Download Summary", st.session_state.target_language)
+                        st.download_button(
+                            label=download_button_text,
+                            data=st.session_state.translated_summary,
+                            file_name=f"summary_{st.session_state.target_language}_{st.session_state.detail_level}.txt",
+                            mime="text/plain"
+                        )
+                    except Exception as e:
+                        # Fallback to English
+                        st.download_button(
+                            label="Download Summary",
+                            data=st.session_state.translated_summary,
+                            file_name=f"summary_{st.session_state.target_language}_{st.session_state.detail_level}.txt",
+                            mime="text/plain"
+                        )
+                else:
+                    st.download_button(
+                        label="Download Summary",
+                        data=st.session_state.translated_summary,
+                        file_name=f"summary_{st.session_state.target_language}_{st.session_state.detail_level}.txt",
+                        mime="text/plain"
+                    )
                 
-                # What the system can find
+                # What the system can find section with translation
                 st.markdown("---")
-                st.markdown("### The system can identify:")
                 
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    st.markdown("✅ **Legal terms**")
-                    st.markdown("✅ **Contract clauses**")
-                    st.markdown("✅ **Liability issues**")
-                
-                with col2:
-                    st.markdown("✅ **Financial obligations**")
-                    st.markdown("✅ **Key parties involved**")
-                    st.markdown("✅ **Important dates**")
-                
-                with col3:
-                    st.markdown("✅ **Legal notices**")
-                    st.markdown("✅ **Legal opinions**")
-                    st.markdown("✅ **Rights & duties**")
+                if st.session_state.target_language != "english":
+                    try:
+                        system_identify_text = translation_helper.translate_text("The system can identify:", st.session_state.target_language)
+                        st.markdown(f"### {system_identify_text}")
+                        
+                        col1, col2, col3 = st.columns(3)
+                        
+                        # Translate all capability texts
+                        legal_terms = translation_helper.translate_text("Legal terms", st.session_state.target_language)
+                        contract_clauses = translation_helper.translate_text("Contract clauses", st.session_state.target_language)
+                        liability_issues = translation_helper.translate_text("Liability issues", st.session_state.target_language)
+                        
+                        financial_obligations = translation_helper.translate_text("Financial obligations", st.session_state.target_language)
+                        key_parties = translation_helper.translate_text("Key parties involved", st.session_state.target_language)
+                        important_dates = translation_helper.translate_text("Important dates", st.session_state.target_language)
+                        
+                        legal_notices = translation_helper.translate_text("Legal notices", st.session_state.target_language)
+                        legal_opinions = translation_helper.translate_text("Legal opinions", st.session_state.target_language)
+                        rights_duties = translation_helper.translate_text("Rights & duties", st.session_state.target_language)
+                        
+                        with col1:
+                            st.markdown(f"✅ **{legal_terms}**")
+                            st.markdown(f"✅ **{contract_clauses}**")
+                            st.markdown(f"✅ **{liability_issues}**")
+                        
+                        with col2:
+                            st.markdown(f"✅ **{financial_obligations}**")
+                            st.markdown(f"✅ **{key_parties}**")
+                            st.markdown(f"✅ **{important_dates}**")
+                        
+                        with col3:
+                            st.markdown(f"✅ **{legal_notices}**")
+                            st.markdown(f"✅ **{legal_opinions}**")
+                            st.markdown(f"✅ **{rights_duties}**")
+                    except Exception as e:
+                        # Fallback to English if translation fails
+                        st.markdown("### The system can identify:")
+                        
+                        col1, col2, col3 = st.columns(3)
+                        
+                        with col1:
+                            st.markdown("✅ **Legal terms**")
+                            st.markdown("✅ **Contract clauses**")
+                            st.markdown("✅ **Liability issues**")
+                        
+                        with col2:
+                            st.markdown("✅ **Financial obligations**")
+                            st.markdown("✅ **Key parties involved**")
+                            st.markdown("✅ **Important dates**")
+                        
+                        with col3:
+                            st.markdown("✅ **Legal notices**")
+                            st.markdown("✅ **Legal opinions**")
+                            st.markdown("✅ **Rights & duties**")
+                else:
+                    # Use English
+                    st.markdown("### The system can identify:")
+                    
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        st.markdown("✅ **Legal terms**")
+                        st.markdown("✅ **Contract clauses**")
+                        st.markdown("✅ **Liability issues**")
+                    
+                    with col2:
+                        st.markdown("✅ **Financial obligations**")
+                        st.markdown("✅ **Key parties involved**")
+                        st.markdown("✅ **Important dates**")
+                    
+                    with col3:
+                        st.markdown("✅ **Legal notices**")
+                        st.markdown("✅ **Legal opinions**")
+                        st.markdown("✅ **Rights & duties**")
 
 # HISTORY TAB
 with tab2:
