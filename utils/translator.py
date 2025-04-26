@@ -27,30 +27,34 @@ class TranslationHelper:
         self.openai_available = False
         self.openai_client = None
         
-        # We noticed the project API key format (sk-proj-) doesn't work well
-        # Let's disable OpenAI for now and rely on our local translation
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key and not api_key.startswith("sk-proj-"):
+        # Extract a clean API key - looking specifically for the service account key
+        api_key = os.getenv("OPENAI_API_KEY", "")
+        
+        # Look for a service account key pattern (starts with sk-svcacct-)
+        service_key = None
+        if "sk-svcacct-" in api_key:
+            start_idx = api_key.find("sk-svcacct-")
+            end_idx = start_idx + 87  # Standard OpenAI key length is 51 chars, but service keys are longer
+            if start_idx >= 0 and start_idx + 11 < len(api_key):
+                service_key = api_key[start_idx:min(end_idx, len(api_key))]
+                print(f"Found service account key, using that for OpenAI API")
+            
+        # Use the extracted service key or the original if not found
+        working_key = service_key if service_key else api_key
+            
+        if working_key:
             try:
-                self.openai_client = OpenAI(api_key=api_key)
-                # Validate key with a simple request
-                try:
-                    # Just check if models endpoint works
-                    self.openai_client.models.list(limit=1)
-                    self.openai_available = True
-                    print("OpenAI client initialized and verified successfully.")
-                except Exception as validate_error:
-                    print(f"OpenAI API key validation failed: {str(validate_error)}")
-                    self.openai_client = None 
+                print("Initializing OpenAI client with provided key")
+                self.openai_client = OpenAI(api_key=working_key)
+                self.openai_available = True
             except Exception as e:
                 print(f"OpenAI client initialization error: {str(e)}")
                 self.openai_client = None
+                self.openai_available = False
         else:
-            if api_key and api_key.startswith("sk-proj-"):
-                print("Project API keys (sk-proj-*) are not fully supported. Using local translation only.")
-            else:
-                print("OPENAI_API_KEY environment variable not set or invalid")
+            print("No valid OpenAI API key found. Using local translation only.")
             self.openai_client = None
+            self.openai_available = False
             
         # Try to initialize IndicTranslator
         if INDIC_TRANS_AVAILABLE:

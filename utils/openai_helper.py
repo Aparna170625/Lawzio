@@ -14,28 +14,28 @@ class OpenAIHelper:
         self.is_api_available = False
         self.client = None
         
-        # We noticed the project API key format (sk-proj-) doesn't work well
-        # Let's check for that and provide a better error message
+        # Extract a clean API key - looking specifically for the service account key
         if api_key:
-            if api_key.startswith("sk-proj-"):
-                print("Project API keys (sk-proj-*) are not fully supported. Using local summarization only.")
-            else:
-                try:
-                    # Initialize client 
-                    self.client = OpenAI(api_key=api_key)
-                    
-                    # Validate the API key with a simple request
-                    try:
-                        # Just check if models endpoint works
-                        self.client.models.list(limit=1)
-                        self.is_api_available = True
-                        print("OpenAI client initialized and verified successfully.")
-                    except Exception as validate_error:
-                        print(f"OpenAI API key validation failed: {str(validate_error)}")
-                        self.client = None
-                except Exception as e:
-                    print(f"OpenAI client initialization error: {str(e)}")
-                    self.client = None
+            # Look for a service account key pattern (starts with sk-svcacct-)
+            service_key = None
+            if "sk-svcacct-" in api_key:
+                start_idx = api_key.find("sk-svcacct-")
+                end_idx = start_idx + 87  # Standard OpenAI key length is 51 chars, but service keys are longer
+                if start_idx >= 0 and start_idx + 11 < len(api_key):
+                    service_key = api_key[start_idx:min(end_idx, len(api_key))]
+                    print(f"Found service account key, using that for OpenAI API")
+                
+            # Use the extracted service key or the original if not found
+            working_key = service_key if service_key else api_key
+                
+            try:
+                # Initialize client with the extracted key
+                print("Initializing OpenAI client with provided key")
+                self.client = OpenAI(api_key=working_key)
+                self.is_api_available = True
+            except Exception as e:
+                print(f"OpenAI client initialization error: {str(e)}")
+                self.client = None
         else:
             print("OPENAI_API_KEY environment variable not set")
             self.client = None
