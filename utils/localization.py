@@ -82,10 +82,14 @@ TRANSLATIONS = {
         
         # Results section
         "summary_results": "Summary Results",
-        "summary_in": "{0} Summary in {1}",
-        "translation_method_used": "Translation method used: **{0}**",
+        "simple_summary": "Simple Summary", 
+        "detailed_summary": "Detailed Summary",
+        "in_language": "in {0}",
+        "translation_method_used": "Translation method used",
         "download_summary": "Download Summary",
-        "empty_state": "Upload a document and click 'Summarize Document' to see results here.",
+        "empty_state_msg": "Upload a document and click 'Summarize Document' to see results here.",
+        "failed": "Failed",
+        "translation_error_title": "Translation Error",
         
         # Sample capabilities
         "lawzio_can_help": "Lawzio Can Help You With:",
@@ -177,10 +181,14 @@ TRANSLATIONS = {
         
         # Results section
         "summary_results": "सारांश परिणाम",
-        "summary_in": "{0} सारांश {1} में",
-        "translation_method_used": "उपयोग की गई अनुवाद विधि: **{0}**",
+        "simple_summary": "सरल सारांश", 
+        "detailed_summary": "विस्तृत सारांश",
+        "in_language": "{0} में",
+        "translation_method_used": "उपयोग की गई अनुवाद विधि",
         "download_summary": "सारांश डाउनलोड करें",
-        "empty_state": "दस्तावेज़ अपलोड करें और परिणाम देखने के लिए 'दस्तावेज़ सारांश करें' पर क्लिक करें।",
+        "empty_state_msg": "दस्तावेज़ अपलोड करें और परिणाम देखने के लिए 'दस्तावेज़ सारांश करें' पर क्लिक करें।",
+        "failed": "विफल",
+        "translation_error_title": "अनुवाद त्रुटि",
         
         # Sample capabilities
         "lawzio_can_help": "लॉज़िओ आपकी इनमें मदद कर सकता है:",

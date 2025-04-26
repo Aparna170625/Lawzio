@@ -207,7 +207,7 @@ with main_col1:
                 with st.expander(get_ui_text('document_preview', st.session_state.ui_language)):
                     st.markdown(st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text)
         except Exception as e:
-            st.error(f"Error processing document: {str(e)}")
+            st.error(get_ui_text('processing_error', st.session_state.ui_language, str(e)))
     
     # Actions
     col1, col2 = st.columns(2)
@@ -278,14 +278,14 @@ with main_col1:
                             
                             st.session_state.translated_summary = translated_text
                     except Exception as trans_error:
-                        st.warning(f"Translation error: {str(trans_error)}. Showing original summary.")
-                        st.session_state.translation_method_used = "Failed"
-                        st.session_state.translated_summary = f"**Translation Error**: Could not translate to {st.session_state.target_language.capitalize()}. Showing original summary in English.\n\n{st.session_state.summary}"
+                        st.warning(get_ui_text('translation_error', st.session_state.ui_language, str(trans_error)))
+                        st.session_state.translation_method_used = get_ui_text('failed', st.session_state.ui_language)
+                        st.session_state.translated_summary = f"**{get_ui_text('translation_error_title', st.session_state.ui_language)}**: {get_ui_text('translation_error_msg', st.session_state.ui_language, st.session_state.target_language.capitalize())}\n\n{st.session_state.summary}"
                 else:
                     st.session_state.translation_method_used = None
                     st.session_state.translated_summary = st.session_state.summary
         except Exception as e:
-            st.error(f"Error generating summary: {str(e)}")
+            st.error(get_ui_text('summary_error', st.session_state.ui_language, str(e)))
     
     if clear_button:
         st.session_state.document_text = None
@@ -297,15 +297,15 @@ with main_col1:
 
 # Results section
 with main_col2:
-    st.header("Summary Results")
+    st.header(get_ui_text('summary_results', st.session_state.ui_language))
     
     if st.session_state.translated_summary:
         # Show summary details
-        st.markdown(f"#### {st.session_state.detail_level.capitalize()} Summary in {st.session_state.target_language.capitalize()}")
+        st.markdown(f"#### {get_ui_text(st.session_state.detail_level + '_summary', st.session_state.ui_language)} {get_ui_text('in_language', st.session_state.ui_language, st.session_state.target_language.capitalize())}")
         
         # Show which translation method was used, if any
         if st.session_state.target_language != "english" and hasattr(st.session_state, 'translation_method_used') and st.session_state.translation_method_used:
-            st.info(f"Translation method used: **{st.session_state.translation_method_used}**")
+            st.info(f"{get_ui_text('translation_method_used', st.session_state.ui_language)}: **{st.session_state.translation_method_used}**")
         
         # Create a container with a scrollable area for the summary
         summary_container = st.container(height=500)
@@ -314,30 +314,30 @@ with main_col2:
         
         # Download options
         st.download_button(
-            label="Download Summary",
+            label=get_ui_text('download_summary', st.session_state.ui_language),
             data=st.session_state.translated_summary,
             file_name=f"legal_summary_{st.session_state.detail_level}_{st.session_state.target_language}.txt",
             mime="text/plain"
         )
     else:
         # Show empty state
-        st.info("Upload a document and click 'Summarize Document' to see results here.")
+        st.info(get_ui_text('empty_state_msg', st.session_state.ui_language))
         
         # Sample capabilities
-        st.markdown("### Lawzio Can Help You With:")
+        st.markdown(f"### {get_ui_text('lawzio_capabilities', st.session_state.ui_language)}")
         
         feature_col1, feature_col2 = st.columns(2)
         
         with feature_col1:
-            st.markdown("✅ **Legal Judgments**")
-            st.markdown("✅ **Contracts & Agreements**")
-            st.markdown("✅ **Court Orders**")
+            st.markdown(f"✅ **{get_ui_text('legal_judgments', st.session_state.ui_language)}**")
+            st.markdown(f"✅ **{get_ui_text('contracts_agreements', st.session_state.ui_language)}**")
+            st.markdown(f"✅ **{get_ui_text('court_orders', st.session_state.ui_language)}**")
         
         with feature_col2:
-            st.markdown("✅ **Legal Notices**")
-            st.markdown("✅ **Legal Opinions**")
-            st.markdown("✅ **Terms & Conditions**")
+            st.markdown(f"✅ **{get_ui_text('legal_notices', st.session_state.ui_language)}**")
+            st.markdown(f"✅ **{get_ui_text('legal_opinions', st.session_state.ui_language)}**")
+            st.markdown(f"✅ **{get_ui_text('terms_conditions', st.session_state.ui_language)}**")
 
 # Footer
 st.divider()
-st.markdown("*Lawzio - Making legal documents accessible for everyone*")
+st.markdown(f"*{get_ui_text('footer_tagline', st.session_state.ui_language)}*")
