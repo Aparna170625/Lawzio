@@ -185,9 +185,8 @@ with main_col1:
                             
                         with st.spinner(f"Translating to {st.session_state.target_language.capitalize()}..."):
                             # First, try to determine if IndicTrans will be used
-                            is_indic_source = "english" in ["hindi", "tamil", "bengali", "marathi", 
-                                                         "telugu", "gujarati", "kannada", "malayalam", 
-                                                         "punjabi", "urdu", "odia"]
+                            # Source language is always English for the summary (we're translating the English summary)
+                            is_indic_source = False  # English is not an Indic language
                             is_indic_target = st.session_state.target_language in ["hindi", "tamil", "bengali", "marathi", 
                                                          "telugu", "gujarati", "kannada", "malayalam", 
                                                          "punjabi", "urdu", "odia"]

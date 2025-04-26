@@ -50,21 +50,31 @@ class IndicTranslator:
         self.models = {}
         self.tokenizers = {}
         self.detokenizers = {}
-        self.normalize_punctuation = MosesPunctNormalizer()
+        try:
+            self.normalize_punctuation = MosesPunctNormalizer()
+            # Initialize base tokenizers and detokenizers
+            self.en_tokenizer = MosesTokenizer(lang='en')
+            self.en_detokenizer = MosesDetokenizer(lang='en')
+        except Exception as e:
+            print(f"Failed to initialize MosesPunctNormalizer and tokenizers: {e}")
+            # Set default empty implementations if Moses fails
+            self.normalize_punctuation = lambda text: text  # Just return text as is
+            self.en_tokenizer = lambda text: text.split()  # Simple split by space
+            self.en_detokenizer = lambda tokens: ' '.join(tokens)  # Simple join by space
+            
         self.is_available = False
         self.supported_languages = list(INDIC_LANGUAGE_CODES.keys())
         
-        # Initialize base tokenizers and detokenizers
-        self.en_tokenizer = MosesTokenizer(lang='en')
-        self.en_detokenizer = MosesDetokenizer(lang='en')
-        
         # Try to initialize the models
         try:
+            print("Attempting to initialize IndicTrans models...")
             self._download_and_setup_models()
             self.is_available = True
+            print("IndicTrans models initialized successfully!")
         except Exception as e:
             print(f"IndicTrans initialization error: {e}")
             self.is_available = False
+            print("IndicTrans will not be available for translation. Using fallback translators.")
     
     def _download_and_setup_models(self):
         """Download and setup the required IndicTrans2 models"""
@@ -104,10 +114,10 @@ class IndicTranslator:
     
     def _download_models(self):
         """Download the IndicTrans2 models"""
-        # IndicTrans2 models URLs
+        # Updated IndicTrans2 models URLs
         model_urls = {
-            "en-indic": "https://ai4bharat.iitm.ac.in/models/translation/indictrans2-en-indic-ct2_int8.zip",
-            "indic-en": "https://ai4bharat.iitm.ac.in/models/translation/indictrans2-indic-en-ct2_int8.zip"
+            "en-indic": "https://indic-nlp-public.objectstore.e2enetworks.net/ai4bharat/indictrans2/indictrans2-en-indic-ct2_int8.zip",
+            "indic-en": "https://indic-nlp-public.objectstore.e2enetworks.net/ai4bharat/indictrans2/indictrans2-indic-en-ct2_int8.zip"
         }
         
         for model_name, url in model_urls.items():

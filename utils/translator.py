@@ -117,14 +117,15 @@ class TranslationHelper:
         if target_language.lower() not in self.languages:
             raise ValueError(f"Unsupported language: {target_language}. Supported languages are: {', '.join(self.languages.keys())}")
         
-        # Detect source language
-        source_language = self.detect_language(text)
+        # Get source language
+        source_language = "english"  # Assume English source for summaries
         
         # If already in target language, return as is
         if source_language.lower() == target_language.lower():
             return text
         
         lang_code = self.languages[target_language.lower()]
+        print(f"Translating from {source_language} to {target_language} (code: {lang_code})")
         
         # Check if the source and target are Indian languages
         is_indic_source = source_language.lower() in ["hindi", "tamil", "bengali", "marathi", 
@@ -134,13 +135,17 @@ class TranslationHelper:
                                                      "telugu", "gujarati", "kannada", "malayalam", 
                                                      "punjabi", "urdu", "odia"]
         
-        # First try IndicTrans for Indian languages
-        if (is_indic_source or source_language.lower() == "english") and \
-           (is_indic_target or target_language.lower() == "english") and \
-           self.indic_translator and self.indic_translator.is_available:
+        # First try IndicTrans for Indian languages if available
+        if hasattr(self, 'indic_translator') and self.indic_translator and self.indic_translator.is_available and \
+           (is_indic_source or source_language.lower() == "english") and \
+           (is_indic_target or target_language.lower() == "english"):
             try:
                 print(f"Using IndicTrans for {source_language} to {target_language} translation")
-                return self.indic_translator.translate(text, source_language, target_language)
+                translated = self.indic_translator.translate(text, source_language, target_language)
+                if translated and translated.strip():
+                    return translated
+                else:
+                    print("IndicTrans returned empty result, falling back")
             except Exception as indic_error:
                 print(f"IndicTrans translation failed: {str(indic_error)}. Falling back to other methods.")
                 # If IndicTrans fails, continue with other methods
@@ -148,26 +153,42 @@ class TranslationHelper:
         # For Tamil specifically, use OpenAI directly as googletrans can be unreliable with Tamil
         if target_language.lower() == "tamil" and self.openai_client:
             try:
-                return self._translate_with_openai(text, target_language)
+                print(f"Using OpenAI for {source_language} to {target_language} translation")
+                translated = self._translate_with_openai(text, target_language)
+                if translated and translated.strip():
+                    return translated
+                else:
+                    print("OpenAI returned empty result, falling back")
             except Exception as openai_error:
+                print(f"OpenAI translation failed: {str(openai_error)}. Falling back to Google Translate.")
                 # If OpenAI fails, still try Google Translate as fallback
-                pass
                 
         # Try Google Translate for all other languages, or as fallback
         try:
+            print(f"Using Google Translate for {source_language} to {target_language} translation")
             result = self.google_translator.translate(text, dest=lang_code)
-            return result.text
-        except Exception as e:
+            if result and result.text and result.text.strip():
+                return result.text
+            else:
+                raise Exception("Google Translate returned empty result")
+        except Exception as google_error:
+            print(f"Google Translate failed: {str(google_error)}. Trying OpenAI fallback.")
             # Fallback to OpenAI if Google Translate fails
             if self.openai_client:
                 try:
-                    return self._translate_with_openai(text, target_language)
+                    print("Using OpenAI as final fallback")
+                    translated = self._translate_with_openai(text, target_language)
+                    if translated and translated.strip():
+                        return translated
+                    else:
+                        return f"[Translation to {target_language} failed: All services returned empty results]\n\n{text}"
                 except Exception as openai_error:
+                    print(f"OpenAI fallback failed: {str(openai_error)}")
                     # Return a graceful error message with the original text
-                    return f"[Translation to {target_language} failed. Error: {str(e)}]\n\n{text}"
+                    return f"[Translation to {target_language} failed. All translation services failed.]\n\n{text}"
             else:
                 # Return a graceful error message with the original text
-                return f"[Translation to {target_language} failed. Error: {str(e)}. Other translation services not available.]\n\n{text}"
+                return f"[Translation to {target_language} failed. No translation services available for this language.]\n\n{text}"
     
     def _translate_with_openai(self, text, target_language):
         """Use OpenAI for translation as a fallback"""
