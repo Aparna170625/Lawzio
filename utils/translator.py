@@ -6,7 +6,7 @@ from openai import OpenAI
 from langdetect import detect, LangDetectException
 
 # Import our direct translators
-from utils.direct_translator import get_translator, TamilLegalTranslator
+from utils.direct_translator import get_translator, TamilLegalTranslator, HindiLegalTranslator, BasicLegalTranslator
 
 # Try to import IndicTranslator
 try:
@@ -180,12 +180,23 @@ class TranslationHelper:
                 print(f"Direct translator failed: {str(e)}")
                 translated_text = None
                 
-        # Method 5: Direct translation with basic templates (fallback for all languages)
+        # Method 5: Basic language formatter with proper headers and formatting
         if not translated_text:
             try:
-                print(f"Using direct translation for {target_language}")
-                translated_text = f"[{target_language.capitalize()} translation using basic translation]\n\n{text}"
-                translation_method = "Basic Template"
+                print(f"Using basic language formatter for {target_language}")
+                # This will use our BasicLegalTranslator for languages without specialized translations
+                # It will format the text with proper headers in the target language
+                translator = get_translator(lang_code)
+                if translator:
+                    translated_text = translator.translate(text)
+                    if isinstance(translator, BasicLegalTranslator):
+                        translation_method = f"Basic {target_language.capitalize()} Template"
+                    else:
+                        translation_method = f"Direct {target_language.capitalize()} Translation"
+                else:
+                    # Very unlikely fallback
+                    translated_text = f"[{target_language.capitalize()} translation using basic template]\n\n{text}"
+                    translation_method = "Basic Template"
             except Exception as e:
                 print(f"Basic translation failed: {str(e)}")
                 translated_text = None

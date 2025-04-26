@@ -23,6 +23,7 @@ dependencies = [
     "streamlit>=1.44.1",
     "tf-sentencepiece==0.1.90",
     "torch==2.5.1",
+    "trafilatura>=2.0.0",
     "uvicorn==0.32.1",
 ]
 

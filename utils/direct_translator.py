@@ -1,5 +1,5 @@
 """
-Direct implementation for Tamil translation without external API dependencies
+Direct implementation for Indian language translation without external API dependencies
 This focuses on robust, reliable translation for legal documents
 """
 import re
@@ -255,7 +255,360 @@ class TamilLegalTranslator:
             return f"{self.tamil_header}\n\n{text}\n\n{self.tamil_note}"
 
 
-# More translators can be added here in the future
+class HindiLegalTranslator:
+    """
+    Hindi legal document translator using a comprehensive legal terminology dictionary
+    This is a specialized template-based approach for Hindi legal documents
+    """
+    
+    def __init__(self):
+        """Initialize the Hindi legal translator with comprehensive legal terminology"""
+        # Extended Hindi legal terms and phrases dictionary
+        self.hindi_legal_terms = {
+            # Basic contract terms
+            "agreement": "समझौता",
+            "contract": "अनुबंध",
+            "party": "पक्ष",
+            "parties": "पक्षों",
+            "terms": "शर्तें",
+            "conditions": "शर्तें",
+            "clause": "खंड",
+            "section": "अनुभाग",
+            "paragraph": "पैराग्राफ",
+            "article": "अनुच्छेद",
+            "addendum": "परिशिष्ट",
+            "amendment": "संशोधन",
+            
+            # Legal framework terms
+            "law": "कानून",
+            "legal": "कानूनी",
+            "statute": "विधि",
+            "regulation": "नियम",
+            "provision": "प्रावधान",
+            "code": "संहिता",
+            "bylaws": "उपनियम",
+            "legislation": "विधान",
+            "ordinance": "अध्यादेश",
+            
+            # Court-related terms
+            "court": "न्यायालय",
+            "supreme court": "सर्वोच्च न्यायालय",
+            "high court": "उच्च न्यायालय",
+            "district court": "जिला न्यायालय",
+            "judge": "न्यायाधीश",
+            "magistrate": "मजिस्ट्रेट",
+            "bench": "पीठ",
+            "plaintiff": "वादी",
+            "defendant": "प्रतिवादी",
+            "petitioner": "याचिकाकर्ता",
+            "respondent": "प्रत्यर्थी",
+            "appellant": "अपीलकर्ता",
+            "witness": "गवाह",
+            "testimony": "गवाही",
+            "evidence": "सबूत",
+            "exhibit": "प्रदर्शनी",
+            "affidavit": "हलफनामा",
+            "deposition": "गवाही",
+            "docket": "डॉकेट",
+            
+            # Legal outcomes
+            "verdict": "फैसला",
+            "ruling": "निर्णय",
+            "judgment": "न्यायनिर्णय",
+            "decree": "डिक्री",
+            "order": "आदेश",
+            "injunction": "निषेधाज्ञा",
+            "appeal": "अपील",
+            "stay": "रोक",
+            "dismissal": "खारिज",
+            
+            # Legal professionals
+            "attorney": "अधिवक्ता",
+            "lawyer": "वकील",
+            "advocate": "अधिवक्ता",
+            "counsel": "परामर्शदाता",
+            "solicitor": "सॉलिसिटर",
+            "barrister": "बैरिस्टर",
+            "notary": "नोटरी",
+            "client": "ग्राहक",
+            
+            # Rights and obligations
+            "rights": "अधिकार",
+            "obligations": "दायित्व",
+            "duties": "कर्तव्य",
+            "liability": "देयता",
+            "indemnity": "क्षतिपूर्ति",
+            "warranty": "वारंटी",
+            "guarantee": "गारंटी",
+            "covenant": "प्रतिज्ञापत्र",
+            "undertaking": "वचनबद्धता",
+            
+            # Remedies and penalties
+            "damages": "हर्जाना",
+            "compensation": "मुआवजा",
+            "restitution": "प्रत्यावर्तन",
+            "specific performance": "विशिष्ट पालन",
+            "breach": "उल्लंघन",
+            "violation": "उल्लंघन",
+            "penalty": "जुर्माना",
+            "fine": "जुर्माना",
+            "sanction": "प्रतिबंध",
+            "punishment": "सजा",
+            
+            # Contract lifecycle
+            "execution": "निष्पादन",
+            "enforcement": "प्रवर्तन",
+            "termination": "समाप्ति",
+            "expiration": "समाप्ति",
+            "renewal": "नवीकरण",
+            "extension": "विस्तार",
+            "cancellation": "रद्दीकरण",
+            "rescission": "विखंडन",
+            
+            # Dispute resolution
+            "jurisdiction": "क्षेत्राधिकार",
+            "venue": "स्थान",
+            "arbitration": "मध्यस्थता",
+            "mediation": "मध्यस्थता",
+            "conciliation": "सुलह",
+            "settlement": "निपटारा",
+            "negotiation": "बातचीत",
+            "dispute": "विवाद",
+            "litigation": "मुकदमेबाजी",
+            
+            # Document-related terms
+            "document": "दस्तावेज़",
+            "deed": "विलेख",
+            "certificate": "प्रमाणपत्र",
+            "signature": "हस्ताक्षर",
+            "seal": "मुहर",
+            "date": "तारीख",
+            "execution date": "निष्पादन तिथि",
+            "effective date": "प्रभावी तिथि",
+            
+            # Property-related terms
+            "property": "संपत्ति",
+            "real property": "अचल संपत्ति",
+            "personal property": "व्यक्तिगत संपत्ति",
+            "asset": "परिसंपत्ति",
+            "title": "स्वामित्व",
+            "mortgage": "बंधक",
+            "lease": "पट्टा",
+            "easement": "सुगमता",
+            
+            # Privacy and confidentiality
+            "confidential": "गोपनीय",
+            "confidentiality": "गोपनीयता",
+            "privacy": "निजता",
+            "disclosure": "प्रकटीकरण",
+            "non-disclosure": "गैर-प्रकटीकरण",
+            
+            # Financial terms
+            "payment": "भुगतान",
+            "fee": "शुल्क",
+            "cost": "लागत",
+            "expense": "व्यय",
+            "price": "मूल्य",
+            "consideration": "प्रतिफल",
+            "tax": "कर",
+            "interest": "ब्याज",
+            "default": "चूक",
+            
+            # Legal drafting terms
+            "hereby": "एतद्द्वारा",
+            "whereas": "जबकि",
+            "notwithstanding": "के बावजूद",
+            "herein": "इसमें",
+            "hereof": "इसका",
+            "thereof": "उसका",
+            "aforementioned": "पूर्वोक्त",
+            "hereunder": "इसके अंतर्गत",
+            "subject to": "के अधीन",
+            
+            # General legal concepts
+            "force majeure": "अप्रत्याशित घटना",
+            "act of god": "दैवीय घटना",
+            "good faith": "सद्भावना",
+            "due diligence": "सम्यक तत्परता",
+            "precedent": "पूर्वोदाहरण",
+            "doctrine": "सिद्धांत",
+            "rule of law": "विधि का शासन",
+            "public policy": "लोक नीति",
+            "summary": "सारांश"
+        }
+        
+        # Section headers in Hindi
+        self.section_headers = {
+            "Overview": "अवलोकन",
+            "Summary": "सारांश",
+            "Introduction": "परिचय",
+            "Background": "पृष्ठभूमि",
+            "Purpose": "उद्देश्य",
+            "Scope": "विस्तार",
+            "Terms": "शर्तें",
+            "Conditions": "शर्तें",
+            "Obligations": "दायित्व",
+            "Rights": "अधिकार",
+            "Representations": "प्रतिनिधित्व",
+            "Warranties": "वारंटियां",
+            "Payment": "भुगतान",
+            "Termination": "समाप्ति",
+            "Governing Law": "शासी कानून",
+            "Dispute Resolution": "विवाद समाधान",
+            "Confidentiality": "गोपनीयता",
+            "General Provisions": "सामान्य प्रावधान",
+            "Miscellaneous": "विविध",
+            "Signatures": "हस्ताक्षर",
+        }
+        
+        # Basic Hindi phrases for legal document translation
+        self.hindi_header = "कानूनी दस्तावेज़ सारांश"  # Legal Document Summary
+        self.hindi_intro = "इस कानूनी दस्तावेज़ का सारांश निम्नलिखित है:"  # The summary of this legal document is as follows
+        self.hindi_note = "नोट: यह पूर्ण अनुवाद नहीं है, और केवल प्रमुख कानूनी शब्दों के अर्थ प्रदान करता है।"  # Note: This is not a complete translation, and only provides meaning for key legal terms.
+    
+    def translate(self, text):
+        """
+        Translate English legal text into Hindi using the legal terms dictionary
+        
+        Args:
+            text (str): The English legal text to translate
+            
+        Returns:
+            str: Text with Hindi translations for legal terms
+        """
+        if not text:
+            return ""
+            
+        try:
+            # First, replace section headers
+            enhanced_text = text
+            for eng_header, hindi_header in self.section_headers.items():
+                pattern = r'\b' + re.escape(eng_header) + r'\b'
+                enhanced_text = re.sub(pattern, f"{eng_header} ({hindi_header})", enhanced_text, flags=re.IGNORECASE)
+            
+            # Then replace legal terms
+            for eng_term, hindi_term in self.hindi_legal_terms.items():
+                # Replace whole words only (with word boundaries)
+                pattern = r'\b' + re.escape(eng_term) + r'\b'
+                enhanced_text = re.sub(pattern, f"{eng_term} ({hindi_term})", enhanced_text, flags=re.IGNORECASE)
+            
+            # Create a formatted Hindi summary with translated key terms
+            full_translation = f"{self.hindi_header}\n\n{self.hindi_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{self.hindi_note}"
+            return full_translation
+            
+        except Exception as e:
+            print(f"Hindi translation error: {str(e)}")
+            # Even if there's an error, try to return something
+            return f"{self.hindi_header}\n\n{text}\n\n{self.hindi_note}"
+
+
+# Basic language-specific translator with legal terminology
+class BasicLegalTranslator:
+    """
+    A generic formatter for legal document translations
+    when a specialized translator is not available
+    """
+    
+    def __init__(self, language_name, language_code):
+        """Initialize the basic translator with language info"""
+        self.language_name = language_name
+        self.language_code = language_code
+        
+        # Basic header translations for common languages
+        self.headers = {
+            "hi": {
+                "header": "कानूनी दस्तावेज़ सारांश",
+                "intro": "इस कानूनी दस्तावेज़ का सारांश निम्नलिखित है:",
+                "note": "नोट: यह पूर्ण अनुवाद नहीं है, केवल मूल अंग्रेजी पाठ के साथ प्रदान किया गया है।"
+            },
+            "mr": {
+                "header": "कायदेशीर दस्तऐवजाचा सारांश",
+                "intro": "या कायदेशीर दस्तऐवजाचा सारांश खालीलप्रमाणे आहे:",
+                "note": "टीप: हा पूर्ण अनुवाद नाही, मूळ इंग्रजी मजकुरासह प्रदान केला आहे."
+            },
+            "bn": {
+                "header": "আইনি নথির সারসংক্ষেপ",
+                "intro": "এই আইনি নথির সারসংক্ষেপ নিম্নরূপ:",
+                "note": "দ্রষ্টব্য: এটি একটি সম্পূর্ণ অনুবাদ নয়, মূল ইংরেজি পাঠ্যের সাথে প্রদান করা হয়েছে।"
+            },
+            "te": {
+                "header": "చట్టపరమైన పత్రం యొక్క సారాంశం",
+                "intro": "ఈ చట్టపరమైన పత్రం యొక్క సారాంశం కింది విధంగా ఉంది:",
+                "note": "గమనిక: ఇది పూర్తి అనువాదం కాదు, అసలు ఇంగ్లీష్ పాఠంతో అందించబడింది."
+            },
+            "gu": {
+                "header": "કાનૂની દસ્તાવેજનો સારાંશ",
+                "intro": "આ કાનૂની દસ્તાવેજનો સારાંશ નીચે મુજબ છે:",
+                "note": "નોંધ: આ પૂર્ણ અનુવાદ નથી, મૂળ અંગ્રેજી લખાણ સાથે પ્રદાન કરવામાં આવ્યું છે."
+            },
+            "kn": {
+                "header": "ಕಾನೂನು ದಾಖಲೆಯ ಸಾರಾಂಶ",
+                "intro": "ಈ ಕಾನೂನು ದಾಖಲೆಯ ಸಾರಾಂಶವು ಈ ಕೆಳಗಿನಂತಿದೆ:",
+                "note": "ಗಮನಿಸಿ: ಇದು ಪೂರ್ಣ ಅನುವಾದವಲ್ಲ, ಮೂಲ ಇಂಗ್ಲಿಷ್ ಪಠ್ಯದೊಂದಿಗೆ ಒದಗಿಸಲಾಗಿದೆ."
+            },
+            "ml": {
+                "header": "നിയമപരമായ രേഖയുടെ സംഗ്രഹം",
+                "intro": "ഈ നിയമപരമായ രേഖയുടെ സംഗ്രഹം ചുവടെ കാണുന്നു:",
+                "note": "കുറിപ്പ്: ഇത് ഒരു പൂർണ്ണ വിവർത്തനമല്ല, യഥാർത്ഥ ഇംഗ്ലീഷ് ടെക്സ്റ്റിനൊപ്പം നൽകിയിരിക്കുന്നു."
+            },
+            "pa": {
+                "header": "ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ ਦਾ ਸਾਰ",
+                "intro": "ਇਸ ਕਾਨੂੰਨੀ ਦਸਤਾਵੇਜ਼ ਦਾ ਸਾਰ ਹੇਠਾਂ ਦਿੱਤਾ ਗਿਆ ਹੈ:",
+                "note": "ਨੋਟ: ਇਹ ਪੂਰਾ ਅਨੁਵਾਦ ਨਹੀਂ ਹੈ, ਅਸਲ ਅੰਗਰੇਜ਼ੀ ਪਾਠ ਦੇ ਨਾਲ ਪ੍ਰਦਾਨ ਕੀਤਾ ਗਿਆ ਹੈ।"
+            },
+            "ur": {
+                "header": "قانونی دستاویز کا خلاصہ",
+                "intro": "اس قانونی دستاویز کا خلاصہ درج ذیل ہے:",
+                "note": "نوٹ: یہ مکمل ترجمہ نہیں ہے، اصل انگریزی متن کے ساتھ فراہم کیا گیا ہے۔"
+            },
+            "or": {
+                "header": "ଆଇନଗତ ଦଲିଲର ସାରାଂଶ",
+                "intro": "ଏହି ଆଇନଗତ ଦଲିଲର ସାରାଂଶ ନିମ୍ନରେ ଦିଆଯାଇଛି:",
+                "note": "ଦ୍ରଷ୍ଟବ୍ୟ: ଏହା ଏକ ସମ୍ପୂର୍ଣ୍ଣ ଅନୁବାଦ ନୁହେଁ, ମୂଳ ଇଂରାଜୀ ପାଠ୍ୟ ସହିତ ପ୍ରଦାନ କରାଯାଇଛି।"
+            },
+        }
+        
+        # Default English if language not supported
+        self.default_headers = {
+            "header": f"Legal Document Summary ({self.language_name})",
+            "intro": f"The summary of this legal document is as follows ({self.language_name}):",
+            "note": f"Note: This is not a complete translation, provided with the original English text."
+        }
+    
+    def translate(self, text):
+        """
+        Format the text with proper headers and formatting
+        
+        Args:
+            text (str): The English legal text
+            
+        Returns:
+            str: Formatted text with headers in target language
+        """
+        if not text:
+            return ""
+            
+        try:
+            # Get appropriate headers for the language
+            lang_headers = self.headers.get(self.language_code.lower(), self.default_headers)
+            
+            # Create a nicely formatted output with sections
+            formatted_text = f"{lang_headers['header']}\n\n{lang_headers['intro']}\n\n"
+            formatted_text += "----\n\n"
+            
+            # Add the original text (which we'll consider as the translation for now)
+            formatted_text += text
+            
+            # Add footer note
+            formatted_text += f"\n\n----\n\n{lang_headers['note']}"
+            
+            return formatted_text
+            
+        except Exception as e:
+            print(f"Basic translation formatting error: {str(e)}")
+            # Even if there's an error, return something
+            return f"Translation to {self.language_name}\n\n{text}"
+
 
 def get_translator(language_code):
     """
@@ -267,7 +620,28 @@ def get_translator(language_code):
     Returns:
         Translator object or None if not available
     """
+    # Language code to name mapping for more readable outputs
+    language_names = {
+        "en": "English",
+        "hi": "Hindi", 
+        "ta": "Tamil",
+        "bn": "Bengali",
+        "mr": "Marathi",
+        "te": "Telugu",
+        "gu": "Gujarati",
+        "kn": "Kannada",
+        "ml": "Malayalam",
+        "pa": "Punjabi",
+        "ur": "Urdu",
+        "or": "Odia"
+    }
+    
+    # First check for specialized translators
     if language_code.lower() == 'ta':
         return TamilLegalTranslator()
-    # Add more translators here as needed
-    return None
+    elif language_code.lower() == 'hi':
+        return HindiLegalTranslator()
+    
+    # For other languages, use the basic formatter with appropriate language name
+    language_name = language_names.get(language_code.lower(), "Unknown")
+    return BasicLegalTranslator(language_name, language_code.lower())
