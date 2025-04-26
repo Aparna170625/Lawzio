@@ -198,7 +198,14 @@ with main_col1:
                                 translation_helper.indic_translator.is_available
                                 
                             # For Tamil or if IndicTrans is available for Indian languages
-                            if st.session_state.target_language == "tamil" and translation_helper.openai_client:
+                            # Check if OpenAI is having quota issues by checking if the summary
+                            # contains the message about quota exceeded
+                            openai_quota_exceeded = False
+                            if st.session_state.summary and "API quota exceeded" in st.session_state.summary:
+                                openai_quota_exceeded = True
+                                print("Detected OpenAI quota exceeded from summary, will not use for translation")
+                            
+                            if st.session_state.target_language == "tamil" and translation_helper.openai_client and not openai_quota_exceeded:
                                 st.session_state.translation_method_used = "OpenAI GPT-4o"
                             elif indic_will_be_used:
                                 st.session_state.translation_method_used = "IndicTrans"

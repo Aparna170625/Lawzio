@@ -193,7 +193,8 @@ class TranslationHelper:
     def _translate_with_openai(self, text, target_language):
         """Use OpenAI for translation as a fallback"""
         if not self.openai_client:
-            return f"[OpenAI translation not available. API key not configured or invalid.]\n\n{text}"
+            print("OpenAI client not available for translation")
+            raise Exception("OpenAI API key not configured or invalid")
             
         try:
             response = self.openai_client.chat.completions.create(
@@ -208,9 +209,11 @@ class TranslationHelper:
         except Exception as e:
             error_str = str(e)
             if "quota" in error_str.lower() or "insufficient_quota" in error_str:
-                return f"[OpenAI translation failed: API quota exceeded.]\n\n{text}"
+                print(f"OpenAI API quota exceeded, cannot use for translation")
+                raise Exception("OpenAI API quota exceeded")
             else:
-                return f"[OpenAI translation failed: {error_str}]\n\n{text}"
+                print(f"OpenAI translation failed: {error_str}")
+                raise Exception(f"OpenAI translation error: {error_str}")
     
     def _is_english(self, text):
         """Simple check if text is primarily English"""
