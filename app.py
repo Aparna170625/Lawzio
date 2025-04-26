@@ -59,12 +59,17 @@ st.markdown("*" + get_ui_text("app_description", st.session_state.ui_language) +
 with st.sidebar:
     st.header(get_ui_text("settings", st.session_state.ui_language))
     
-    # UI Language selection
+    # UI Language selection - using the same language options as output languages
+    languages = ["English", "Hindi", "Tamil", "Bengali", "Marathi", "Telugu", 
+                 "Gujarati", "Kannada", "Malayalam", "Punjabi", "Urdu", "Odia"]
+    language_codes = ["english", "hindi", "tamil", "bengali", "marathi", "telugu",
+                      "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"]
+                      
     ui_language = st.selectbox(
         "Interface Language:",
-        ["English", "Hindi", "Tamil"],
-        index=["english", "hindi", "tamil"].index(st.session_state.ui_language)
-        if st.session_state.ui_language in ["english", "hindi", "tamil"] else 0
+        languages,
+        index=language_codes.index(st.session_state.ui_language)
+        if st.session_state.ui_language in language_codes else 0
     )
     
     # Update UI language if changed
@@ -151,16 +156,16 @@ with main_col1:
     
     if uploaded_file is not None:
         try:
-            with st.spinner("Processing document..."):
+            with st.spinner(get_ui_text("processing_document", st.session_state.ui_language)):
                 # Process the document
                 st.session_state.document_text = process_document(uploaded_file)
-                st.success(f"Document '{uploaded_file.name}' processed successfully!")
+                st.success(get_ui_text("processed_success", st.session_state.ui_language, uploaded_file.name))
                 
                 # Detect document language
                 detected_language = translation_helper.detect_language(st.session_state.document_text)
                 
                 # Assess risk level of the document
-                with st.spinner("Assessing document risk level..."):
+                with st.spinner(get_ui_text("assessing_risk", st.session_state.ui_language)):
                     risk_level, risk_factors = assess_risk_level(st.session_state.document_text)
                     # Store in session state
                     st.session_state.risk_level = risk_level
@@ -170,36 +175,36 @@ with main_col1:
                     risk_color = get_risk_color(risk_level)
                 
                 # Show document info
-                st.markdown("#### Document Information")
+                st.markdown(f"#### {get_ui_text('document_information', st.session_state.ui_language)}")
                 
                 # Create two columns for info
                 doc_info_col1, doc_info_col2 = st.columns(2)
                 
                 with doc_info_col1:
-                    st.markdown(f"**Filename:** {uploaded_file.name}")
-                    st.markdown(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
-                    st.markdown(f"**Content Length:** {len(st.session_state.document_text)} characters")
-                    st.markdown(f"**Detected Language:** {detected_language.capitalize()}")
+                    st.markdown(f"**{get_ui_text('filename', st.session_state.ui_language)}** {uploaded_file.name}")
+                    st.markdown(f"**{get_ui_text('size', st.session_state.ui_language)}** {round(uploaded_file.size / 1024, 2)} {get_ui_text('kb', st.session_state.ui_language)}")
+                    st.markdown(f"**{get_ui_text('content_length', st.session_state.ui_language)}** {len(st.session_state.document_text)} {get_ui_text('characters', st.session_state.ui_language)}")
+                    st.markdown(f"**{get_ui_text('detected_language', st.session_state.ui_language)}** {detected_language.capitalize()}")
                 
                 with doc_info_col2:
                     # Show risk level with appropriate color
                     st.markdown(f"""
                     <div style="padding: 10px; border-radius: 5px; background-color: {risk_color}; 
                     color: white; font-weight: bold; text-align: center; margin-bottom: 10px;">
-                    Risk Level: {risk_level}
+                    {get_ui_text('risk_level', st.session_state.ui_language)} {risk_level}
                     </div>
                     """, unsafe_allow_html=True)
                     
                     # Show risk factors in a bullet list
                     if risk_factors:
-                        st.markdown("**Risk Factors Detected:**")
+                        st.markdown(f"**{get_ui_text('risk_factors_detected', st.session_state.ui_language)}**")
                         for factor in risk_factors:
                             st.markdown(f"• {factor}")
                     else:
-                        st.markdown("**No specific risk factors detected**")
+                        st.markdown(f"**{get_ui_text('no_risk_factors', st.session_state.ui_language)}**")
                 
                 # Show a preview
-                with st.expander("Document Preview"):
+                with st.expander(get_ui_text('document_preview', st.session_state.ui_language)):
                     st.markdown(st.session_state.document_text[:1000] + "..." if len(st.session_state.document_text) > 1000 else st.session_state.document_text)
         except Exception as e:
             st.error(f"Error processing document: {str(e)}")
@@ -209,17 +214,17 @@ with main_col1:
     
     with col1:
         summarize_button = st.button(
-            "Summarize Document", 
+            get_ui_text('summarize_document', st.session_state.ui_language),
             type="primary",
             disabled=st.session_state.document_text is None
         )
     
     with col2:
-        clear_button = st.button("Clear All")
+        clear_button = st.button(get_ui_text('clear_all', st.session_state.ui_language))
     
     if summarize_button and st.session_state.document_text:
         try:
-            with st.spinner(f"Generating {st.session_state.detail_level} summary..."):
+            with st.spinner(get_ui_text('generating_summary', st.session_state.ui_language, st.session_state.detail_level)):
                 st.session_state.summary = openai_helper.summarize_legal_document(
                     st.session_state.document_text, 
                     st.session_state.detail_level
@@ -232,7 +237,7 @@ with main_col1:
                         if 'translation_method_used' not in st.session_state:
                             st.session_state.translation_method_used = None
                             
-                        with st.spinner(f"Translating to {st.session_state.target_language.capitalize()}..."):
+                        with st.spinner(get_ui_text('translating_to', st.session_state.ui_language, st.session_state.target_language.capitalize())):
                             # First, try to determine if IndicTrans will be used
                             # Source language is always English for the summary (we're translating the English summary)
                             is_indic_source = False  # English is not an Indic language
