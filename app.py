@@ -240,59 +240,62 @@ else:
     # Document upload section
     with main_col1:
         st.header(get_ui_text("document_upload", st.session_state.ui_language))
+        
+        # Add CSS for better upload visibility
+        st.markdown("""
+        <style>
+        .stFileUploader > div:first-child {
+            border: 2px dashed #4267B2;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .upload-header {
+            font-size: 20px;
+            color: #4267B2;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Big header for upload
+        st.markdown('<p class="upload-header">📄 UPLOAD YOUR LEGAL DOCUMENT HERE</p>', unsafe_allow_html=True)
+        
+        # File uploader with prominent styling
+        uploaded_file = st.file_uploader(
+            "Drag and drop or click to browse files",
+            type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
+            help=get_ui_text("upload_help", st.session_state.ui_language),
+            key="document_uploader"
+        )
+        
+        # Additional help text
+        st.markdown("""
+        👆 **Click above to select or drop a file**  
+        Supported formats: PDF, DOCX, TXT, and Images (JPG, PNG, TIFF)
+        """)
     
-    # Add a styled upload box with prominent border and background
-    st.markdown('''
+    
+    # Privacy options section with clearer descriptions
+    st.markdown("---")
+    st.header("🔒 Privacy Settings")
+    st.markdown("""
     <style>
-    .upload-box {
-        border: 2px dashed #4267B2;
+    .privacy-instruction {
+        font-size: 16px;
+        background-color: #f2f7ff;
+        padding: 10px 15px;
         border-radius: 8px;
-        padding: 20px;
-        margin: 10px 0;
-        background-color: #f8f9fa;
-        text-align: center;
-    }
-    .upload-header {
-        font-size: 18px;
-        color: #4267B2;
-        margin-bottom: 10px;
-        font-weight: bold;
+        border-left: 4px solid #4267B2;
+        margin: 10px 0 20px 0;
     }
     </style>
-    <div class="upload-box">
-        <div class="upload-header">📄 Upload your legal document here</div>
+    <div class="privacy-instruction">
+        Choose how your document should be stored and processed. Higher privacy levels offer better protection but may limit some features.
     </div>
-    ''', unsafe_allow_html=True)
-    
-    uploaded_file = st.file_uploader(
-        get_ui_text("upload_prompt", st.session_state.ui_language),
-        type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
-        help=get_ui_text("upload_help", st.session_state.ui_language)
-    )
-    
-    # Privacy options section with descriptions
-    st.markdown('''
-    <style>
-    .privacy-box {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-        background-color: #f8f9fa;
-    }
-    .privacy-header {
-        font-size: 18px;
-        color: #4267B2;
-        margin-bottom: 10px;
-        font-weight: bold;
-    }
-    </style>
-    <div class="privacy-box">
-        <div class="privacy-header">🔒 Privacy Settings</div>
-    </div>
-    ''', unsafe_allow_html=True)
-    
-    st.markdown("Choose how you want your document to be stored and processed:")
+    """, unsafe_allow_html=True)
     
     privacy_options = ["standard", "enhanced", "maximum"]
     privacy_labels = [
