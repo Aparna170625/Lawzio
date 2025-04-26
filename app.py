@@ -4,6 +4,7 @@ from utils.document_processor import process_document
 from utils.openai_helper import OpenAIHelper
 from utils.translator import TranslationHelper
 from utils.risk_assessment import assess_risk_level, get_risk_color
+from utils.localization import get_ui_text
 
 # Set page configuration
 st.set_page_config(
@@ -23,6 +24,8 @@ if 'detail_level' not in st.session_state:
     st.session_state.detail_level = "detailed"
 if 'target_language' not in st.session_state:
     st.session_state.target_language = "english"
+if 'ui_language' not in st.session_state:
+    st.session_state.ui_language = "english"  # Default UI language
 if 'risk_level' not in st.session_state:
     st.session_state.risk_level = None
 if 'risk_factors' not in st.session_state:
@@ -49,94 +52,101 @@ openai_helper = get_openai_helper()
 translation_helper = get_translation_helper()
 
 # App header
-st.title("⚖️ Lawzio - Legal Document Summarizer")
-st.markdown("""
-*Simplify complex legal documents with AI-powered summarization and translation*
-""")
+st.title(get_ui_text("app_title", st.session_state.ui_language))
+st.markdown("*" + get_ui_text("app_description", st.session_state.ui_language) + "*")
 
 # Sidebar for settings
 with st.sidebar:
-    st.header("Settings")
+    st.header(get_ui_text("settings", st.session_state.ui_language))
+    
+    # UI Language selection
+    ui_language = st.selectbox(
+        "Interface Language:",
+        ["English", "Hindi", "Tamil"],
+        index=["english", "hindi", "tamil"].index(st.session_state.ui_language)
+        if st.session_state.ui_language in ["english", "hindi", "tamil"] else 0
+    )
+    
+    # Update UI language if changed
+    if ui_language.lower() != st.session_state.ui_language:
+        st.session_state.ui_language = ui_language.lower()
+        st.rerun()  # Rerun the app to reflect UI language change
     
     # Detail level setting
     detail_level = st.radio(
-        "Summary Detail Level:",
-        ["Simple", "Detailed"],
+        get_ui_text("summary_detail_level", st.session_state.ui_language),
+        [
+            get_ui_text("simple", st.session_state.ui_language),
+            get_ui_text("detailed", st.session_state.ui_language)
+        ],
         index=1 if st.session_state.detail_level == "detailed" else 0
     )
-    st.session_state.detail_level = detail_level.lower()
+    # Map localized selection back to internal english value
+    if detail_level == get_ui_text("simple", st.session_state.ui_language):
+        st.session_state.detail_level = "simple"
+    else:
+        st.session_state.detail_level = "detailed"
     
-    # Language selection
+    # Target Language selection (for translation)
+    languages = ["English", "Hindi", "Tamil", "Bengali", "Marathi", "Telugu", 
+                 "Gujarati", "Kannada", "Malayalam", "Punjabi", "Urdu", "Odia"]
+    language_codes = ["english", "hindi", "tamil", "bengali", "marathi", "telugu",
+                      "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"]
+    
     target_language = st.selectbox(
-        "Output Language:",
-        ["English", "Hindi", "Tamil", "Bengali", "Marathi", "Telugu", 
-         "Gujarati", "Kannada", "Malayalam", "Punjabi", "Urdu", "Odia"],
-        index=["english", "hindi", "tamil", "bengali", "marathi", "telugu",
-               "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"].index(st.session_state.target_language)
-        if st.session_state.target_language in ["english", "hindi", "tamil", "bengali", "marathi", "telugu",
-                                                "gujarati", "kannada", "malayalam", "punjabi", "urdu", "odia"] else 0
+        get_ui_text("output_language", st.session_state.ui_language),
+        languages,
+        index=language_codes.index(st.session_state.target_language)
+        if st.session_state.target_language in language_codes else 0
     )
     st.session_state.target_language = target_language.lower()
     
     # About section
     st.divider()
-    st.markdown("### About Lawzio")
-    st.markdown("""
-    Lawzio helps users understand complex legal documents by:
-    - Summarizing lengthy legal texts
-    - Simplifying legal jargon
-    - Assessing document risk levels
-    - Identifying potential risk factors
-    - Translating content across languages
-    - Highlighting key points
-    """)
+    st.markdown(f"### {get_ui_text('about_lawzio', st.session_state.ui_language)}")
+    st.markdown(get_ui_text('about_description', st.session_state.ui_language))
     
     # Show translation capabilities
     st.divider()
-    st.markdown("### Translation Methods")
+    st.markdown(f"### {get_ui_text('translation_methods', st.session_state.ui_language)}")
     
     # Show which translation methods are available
     if 'translation_methods' in st.session_state:
         methods = []
         if st.session_state.translation_methods.get('indictrans', False):
-            methods.append("✅ **IndicTrans**: Native Indian language translation")
+            methods.append(get_ui_text('indictrans_available', st.session_state.ui_language))
         else:
-            methods.append("❌ **IndicTrans**: Not available")
+            methods.append(get_ui_text('indictrans_unavailable', st.session_state.ui_language))
             
         if st.session_state.translation_methods.get('openai', False):
-            methods.append("✅ **OpenAI GPT-4o**: AI-powered translation")
+            methods.append(get_ui_text('openai_available', st.session_state.ui_language))
         else:
-            methods.append("❌ **OpenAI GPT-4o**: Not available (needs API key)")
+            methods.append(get_ui_text('openai_unavailable', st.session_state.ui_language))
             
         if st.session_state.translation_methods.get('google', False):
-            methods.append("✅ **Google Translate**: General translation")
+            methods.append(get_ui_text('google_available', st.session_state.ui_language))
         else:
-            methods.append("❌ **Google Translate**: Not available")
+            methods.append(get_ui_text('google_unavailable', st.session_state.ui_language))
         
         for method in methods:
             st.markdown(method)
     
     # Privacy notice
     st.divider()
-    st.markdown("### Privacy Notice")
-    st.markdown("""
-    - All documents are processed securely
-    - Documents are not stored permanently
-    - AI processing is used for summarization
-    - We recommend removing sensitive information
-    """)
+    st.markdown(f"### {get_ui_text('privacy_notice', st.session_state.ui_language)}")
+    st.markdown(get_ui_text('privacy_content', st.session_state.ui_language))
 
 # Main content
 main_col1, main_col2 = st.columns([2, 3])
 
 # Document upload section
 with main_col1:
-    st.header("Document Upload")
+    st.header(get_ui_text("document_upload", st.session_state.ui_language))
     
     uploaded_file = st.file_uploader(
-        "Upload a legal document",
+        get_ui_text("upload_prompt", st.session_state.ui_language),
         type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
-        help="Supported formats: PDF, DOCX, TXT, and Images (JPG, PNG, TIFF, BMP)"
+        help=get_ui_text("upload_help", st.session_state.ui_language)
     )
     
     if uploaded_file is not None:
