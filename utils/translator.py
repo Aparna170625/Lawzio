@@ -4,6 +4,14 @@ from googletrans import Translator
 from openai import OpenAI
 from langdetect import detect, LangDetectException
 
+# Try to import IndicTranslator
+try:
+    from utils.indic_translator import IndicTranslator
+    INDIC_TRANS_AVAILABLE = True
+except Exception as e:
+    print(f"IndicTrans not available: {e}")
+    INDIC_TRANS_AVAILABLE = False
+
 # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
 # do not change this unless explicitly requested by the user
 MODEL_NAME = "gpt-4o"
@@ -17,6 +25,17 @@ class TranslationHelper:
             self.openai_client = OpenAI(api_key=api_key)
         else:
             self.openai_client = None
+            
+        # Try to initialize IndicTranslator
+        if INDIC_TRANS_AVAILABLE:
+            try:
+                self.indic_translator = IndicTranslator()
+                print("IndicTrans initialized successfully.")
+            except Exception as e:
+                print(f"IndicTrans initialization failed: {e}")
+                self.indic_translator = None
+        else:
+            self.indic_translator = None
         
         # Supported languages with their codes
         self.languages = {
@@ -107,6 +126,25 @@ class TranslationHelper:
         
         lang_code = self.languages[target_language.lower()]
         
+        # Check if the source and target are Indian languages
+        is_indic_source = source_language.lower() in ["hindi", "tamil", "bengali", "marathi", 
+                                                     "telugu", "gujarati", "kannada", "malayalam", 
+                                                     "punjabi", "urdu", "odia"]
+        is_indic_target = target_language.lower() in ["hindi", "tamil", "bengali", "marathi", 
+                                                     "telugu", "gujarati", "kannada", "malayalam", 
+                                                     "punjabi", "urdu", "odia"]
+        
+        # First try IndicTrans for Indian languages
+        if (is_indic_source or source_language.lower() == "english") and \
+           (is_indic_target or target_language.lower() == "english") and \
+           self.indic_translator and self.indic_translator.is_available:
+            try:
+                print(f"Using IndicTrans for {source_language} to {target_language} translation")
+                return self.indic_translator.translate(text, source_language, target_language)
+            except Exception as indic_error:
+                print(f"IndicTrans translation failed: {str(indic_error)}. Falling back to other methods.")
+                # If IndicTrans fails, continue with other methods
+                
         # For Tamil specifically, use OpenAI directly as googletrans can be unreliable with Tamil
         if target_language.lower() == "tamil" and self.openai_client:
             try:
@@ -115,7 +153,7 @@ class TranslationHelper:
                 # If OpenAI fails, still try Google Translate as fallback
                 pass
                 
-        # Try Google Translate first for all other languages, or as fallback for Tamil
+        # Try Google Translate for all other languages, or as fallback
         try:
             result = self.google_translator.translate(text, dest=lang_code)
             return result.text
@@ -129,7 +167,7 @@ class TranslationHelper:
                     return f"[Translation to {target_language} failed. Error: {str(e)}]\n\n{text}"
             else:
                 # Return a graceful error message with the original text
-                return f"[Translation to {target_language} failed. Error: {str(e)}. OpenAI fallback not available.]\n\n{text}"
+                return f"[Translation to {target_language} failed. Error: {str(e)}. Other translation services not available.]\n\n{text}"
     
     def _translate_with_openai(self, text, target_language):
         """Use OpenAI for translation as a fallback"""

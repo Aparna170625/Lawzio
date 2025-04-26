@@ -30,7 +30,15 @@ def get_openai_helper():
 
 @st.cache_resource
 def get_translation_helper():
-    return TranslationHelper()
+    helper = TranslationHelper()
+    # Store translation capabilities in session state
+    if 'translation_methods' not in st.session_state:
+        st.session_state.translation_methods = {
+            'google': True,
+            'openai': helper.openai_client is not None,
+            'indictrans': hasattr(helper, 'indic_translator') and helper.indic_translator is not None and helper.indic_translator.is_available
+        }
+    return helper
 
 openai_helper = get_openai_helper()
 translation_helper = get_translation_helper()
@@ -75,6 +83,31 @@ with st.sidebar:
     - Translating content across languages
     - Highlighting key points
     """)
+    
+    # Show translation capabilities
+    st.divider()
+    st.markdown("### Translation Methods")
+    
+    # Show which translation methods are available
+    if 'translation_methods' in st.session_state:
+        methods = []
+        if st.session_state.translation_methods.get('indictrans', False):
+            methods.append("✅ **IndicTrans**: Native Indian language translation")
+        else:
+            methods.append("❌ **IndicTrans**: Not available")
+            
+        if st.session_state.translation_methods.get('openai', False):
+            methods.append("✅ **OpenAI GPT-4o**: AI-powered translation")
+        else:
+            methods.append("❌ **OpenAI GPT-4o**: Not available (needs API key)")
+            
+        if st.session_state.translation_methods.get('google', False):
+            methods.append("✅ **Google Translate**: General translation")
+        else:
+            methods.append("❌ **Google Translate**: Not available")
+        
+        for method in methods:
+            st.markdown(method)
     
     # Privacy notice
     st.divider()
@@ -146,15 +179,44 @@ with main_col1:
                 # Translate if needed
                 if st.session_state.target_language != "english":
                     try:
+                        # Store the translation method used in session state
+                        if 'translation_method_used' not in st.session_state:
+                            st.session_state.translation_method_used = None
+                            
                         with st.spinner(f"Translating to {st.session_state.target_language.capitalize()}..."):
+                            # First, try to determine if IndicTrans will be used
+                            is_indic_source = "english" in ["hindi", "tamil", "bengali", "marathi", 
+                                                         "telugu", "gujarati", "kannada", "malayalam", 
+                                                         "punjabi", "urdu", "odia"]
+                            is_indic_target = st.session_state.target_language in ["hindi", "tamil", "bengali", "marathi", 
+                                                         "telugu", "gujarati", "kannada", "malayalam", 
+                                                         "punjabi", "urdu", "odia"]
+                            
+                            indic_will_be_used = (is_indic_source or "english" == "english") and \
+                                (is_indic_target or st.session_state.target_language == "english") and \
+                                hasattr(translation_helper, 'indic_translator') and \
+                                translation_helper.indic_translator is not None and \
+                                translation_helper.indic_translator.is_available
+                                
+                            # For Tamil or if IndicTrans is available for Indian languages
+                            if st.session_state.target_language == "tamil" and translation_helper.openai_client:
+                                st.session_state.translation_method_used = "OpenAI GPT-4o"
+                            elif indic_will_be_used:
+                                st.session_state.translation_method_used = "IndicTrans"
+                            else:
+                                st.session_state.translation_method_used = "Google Translate"
+                                
+                            # Perform the translation
                             st.session_state.translated_summary = translation_helper.translate_text(
                                 st.session_state.summary,
                                 st.session_state.target_language
                             )
                     except Exception as trans_error:
                         st.warning(f"Translation error: {str(trans_error)}. Showing original summary.")
+                        st.session_state.translation_method_used = "Failed"
                         st.session_state.translated_summary = f"**Translation Error**: Could not translate to {st.session_state.target_language.capitalize()}. Showing original summary in English.\n\n{st.session_state.summary}"
                 else:
+                    st.session_state.translation_method_used = None
                     st.session_state.translated_summary = st.session_state.summary
         except Exception as e:
             st.error(f"Error generating summary: {str(e)}")
@@ -172,6 +234,10 @@ with main_col2:
     if st.session_state.translated_summary:
         # Show summary details
         st.markdown(f"#### {st.session_state.detail_level.capitalize()} Summary in {st.session_state.target_language.capitalize()}")
+        
+        # Show which translation method was used, if any
+        if st.session_state.target_language != "english" and hasattr(st.session_state, 'translation_method_used') and st.session_state.translation_method_used:
+            st.info(f"Translation method used: **{st.session_state.translation_method_used}**")
         
         # Create a container with a scrollable area for the summary
         summary_container = st.container(height=500)
