@@ -1,15 +1,20 @@
 """
 Database module for storing document history and analysis results
+with encryption support for enhanced privacy
 """
 import os
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
 import logging
+from utils.encryption import DocumentEncryption, anonymize_text, generate_document_token
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize encryption
+encryption = DocumentEncryption()
 
 # Database connection parameters from environment variables
 DB_PARAMS = {
@@ -34,9 +39,10 @@ def get_connection():
         logger.error(f"Database connection error: {e}")
         return None
 
-def save_document_history(filename, file_size_kb, document_language, risk_level, content_length, risk_factors=None):
+def save_document_history(filename, file_size_kb, document_language, risk_level, content_length, 
+                         risk_factors=None, document_text=None, privacy_level='standard'):
     """
-    Save document history to the database
+    Save document history to the database with encryption support
     
     Args:
         filename (str): Name of the uploaded file
@@ -45,6 +51,8 @@ def save_document_history(filename, file_size_kb, document_language, risk_level,
         risk_level (str): Assessed risk level (Low, Medium, High)
         content_length (int): Number of characters in the document
         risk_factors (list, optional): List of identified risk factors
+        document_text (str, optional): The full document text (will be encrypted if privacy_level requires)
+        privacy_level (str): Privacy level ('standard', 'enhanced', 'maximum')
         
     Returns:
         int: ID of the created record or None if failed
@@ -59,20 +67,41 @@ def save_document_history(filename, file_size_kb, document_language, risk_level,
     try:
         with connection:
             with connection.cursor() as cursor:
-                # Insert document history
+                # Generate access token for document retrieval
+                access_token = generate_document_token()
+                is_encrypted = False
+            
+                # Encrypt document text if provided and privacy level requires it
+                encrypted_document_text = None
+                if document_text and privacy_level in ['enhanced', 'maximum']:
+                    encrypted_document_text = encryption.encrypt(document_text)
+                    is_encrypted = True
+                elif document_text:
+                    encrypted_document_text = document_text  # Store unencrypted
+                
+                # Apply text anonymization for maximum privacy level
+                anonymized_factors = risk_factors.copy()
+                if privacy_level == 'maximum' and risk_factors:
+                    anonymized_factors = []
+                    for factor in risk_factors:
+                        anonymized_factors.append(anonymize_text(factor))
+                
+                # Insert document history with encryption fields
                 cursor.execute(
                     """
                     INSERT INTO document_history 
-                    (filename, file_size_kb, document_language, risk_level, content_length)
-                    VALUES (%s, %s, %s, %s, %s) RETURNING id
+                    (filename, file_size_kb, document_language, risk_level, content_length, 
+                     document_text, is_encrypted, access_token, privacy_level)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                     """,
-                    (filename, file_size_kb, document_language, risk_level, content_length)
+                    (filename, file_size_kb, document_language, risk_level, content_length,
+                     encrypted_document_text, is_encrypted, access_token, privacy_level)
                 )
                 document_id = cursor.fetchone()[0]
                 
                 # Insert risk factors if any
-                if risk_factors:
-                    for factor in risk_factors:
+                if anonymized_factors:
+                    for factor in anonymized_factors:
                         cursor.execute(
                             """
                             INSERT INTO risk_factors (document_id, risk_factor)
@@ -80,6 +109,20 @@ def save_document_history(filename, file_size_kb, document_language, risk_level,
                             """,
                             (document_id, factor)
                         )
+                
+                # Save privacy settings
+                retention_days = 7 if privacy_level == 'maximum' else 30
+                anonymize = True if privacy_level == 'maximum' else False
+                encrypt_storage = True if privacy_level in ['enhanced', 'maximum'] else False
+                
+                cursor.execute(
+                    """
+                    INSERT INTO privacy_settings
+                    (document_id, privacy_level, retention_days, anonymize_text, encrypt_storage, access_token)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """, 
+                    (document_id, privacy_level, retention_days, anonymize, encrypt_storage, access_token)
+                )
                 
                 return document_id
     except Exception as e:
@@ -90,7 +133,7 @@ def save_document_history(filename, file_size_kb, document_language, risk_level,
 
 def save_document_summary(document_id, summary_text, detail_level, language="english"):
     """
-    Save document summary to the database
+    Save document summary to the database with encryption if needed
     
     Args:
         document_id (int): ID of the document in document_history
@@ -108,13 +151,35 @@ def save_document_summary(document_id, summary_text, detail_level, language="eng
     try:
         with connection:
             with connection.cursor() as cursor:
+                # Check document's privacy level
+                cursor.execute(
+                    """
+                    SELECT privacy_level FROM document_history
+                    WHERE id = %s
+                    """,
+                    (document_id,)
+                )
+                
+                result = cursor.fetchone()
+                if not result:
+                    return None
+                
+                privacy_level = result[0] if result[0] else 'standard'
+                is_encrypted = False
+                encrypted_summary = summary_text
+                
+                # Encrypt summary if privacy level requires it
+                if privacy_level in ['enhanced', 'maximum']:
+                    encrypted_summary = encryption.encrypt(summary_text)
+                    is_encrypted = True
+                
                 cursor.execute(
                     """
                     INSERT INTO document_summaries 
-                    (document_id, summary_text, detail_level, language)
-                    VALUES (%s, %s, %s, %s) RETURNING id
+                    (document_id, summary_text, detail_level, language, is_encrypted)
+                    VALUES (%s, %s, %s, %s, %s) RETURNING id
                     """,
-                    (document_id, summary_text, detail_level, language)
+                    (document_id, encrypted_summary, detail_level, language, is_encrypted)
                 )
                 return cursor.fetchone()[0]
     except Exception as e:
@@ -196,22 +261,79 @@ def get_document_with_risk_factors(document_id):
                 risk_factors = [row['risk_factor'] for row in cursor.fetchall()]
                 
                 document['risk_factors'] = risk_factors
+                
+                # Decrypt document_text if it exists and is encrypted
+                if document.get('document_text') and document.get('is_encrypted'):
+                    try:
+                        document['document_text'] = encryption.decrypt(document['document_text'])
+                    except Exception as e:
+                        logger.error(f"Error decrypting document text: {e}")
+                        document['document_text'] = "[Encrypted content - decryption failed]"
+                
                 return document
     except Exception as e:
         logger.error(f"Error getting document with risk factors: {e}")
         return None
     finally:
         connection.close()
-
-def get_document_summaries(document_id):
+        
+def get_document_text(document_id):
     """
-    Get all summaries for a document
+    Get the full document text, decrypting if necessary
     
     Args:
         document_id (int): ID of the document
         
     Returns:
-        list: List of summary records
+        str: Decrypted document text or None
+    """
+    connection = get_connection()
+    if not connection:
+        return None
+        
+    try:
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT document_text, is_encrypted 
+                    FROM document_history
+                    WHERE id = %s
+                    """,
+                    (document_id,)
+                )
+                
+                result = cursor.fetchone()
+                if not result or not result[0]:
+                    return None
+                    
+                document_text, is_encrypted = result
+                
+                # Decrypt if encrypted
+                if is_encrypted:
+                    try:
+                        return encryption.decrypt(document_text)
+                    except Exception as e:
+                        logger.error(f"Error decrypting document text: {e}")
+                        return "[Encrypted content - decryption failed]"
+                else:
+                    return document_text
+                
+    except Exception as e:
+        logger.error(f"Error getting document text: {e}")
+        return None
+    finally:
+        connection.close()
+
+def get_document_summaries(document_id):
+    """
+    Get all summaries for a document, decrypting if necessary
+    
+    Args:
+        document_id (int): ID of the document
+        
+    Returns:
+        list: List of summary records with decrypted content
     """
     connection = get_connection()
     if not connection:
@@ -228,7 +350,18 @@ def get_document_summaries(document_id):
                     """,
                     (document_id,)
                 )
-                return cursor.fetchall()
+                summaries = cursor.fetchall()
+                
+                # Check for encryption and decrypt if needed
+                for summary in summaries:
+                    if summary.get('is_encrypted') and summary.get('summary_text'):
+                        try:
+                            summary['summary_text'] = encryption.decrypt(summary['summary_text'])
+                        except Exception as e:
+                            logger.error(f"Error decrypting summary: {e}")
+                            summary['summary_text'] = "[Encrypted content - decryption failed]"
+                
+                return summaries
     except Exception as e:
         logger.error(f"Error getting document summaries: {e}")
         return []
