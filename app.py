@@ -3,6 +3,7 @@ import time
 from utils.document_processor import process_document
 from utils.openai_helper import OpenAIHelper
 from utils.translator import TranslationHelper
+from utils.risk_assessment import assess_risk_level, get_risk_color
 
 # Set page configuration
 st.set_page_config(
@@ -22,6 +23,10 @@ if 'detail_level' not in st.session_state:
     st.session_state.detail_level = "detailed"
 if 'target_language' not in st.session_state:
     st.session_state.target_language = "english"
+if 'risk_level' not in st.session_state:
+    st.session_state.risk_level = None
+if 'risk_factors' not in st.session_state:
+    st.session_state.risk_factors = []
 
 # Initialize helpers
 @st.cache_resource
@@ -80,6 +85,8 @@ with st.sidebar:
     Lawzio helps users understand complex legal documents by:
     - Summarizing lengthy legal texts
     - Simplifying legal jargon
+    - Assessing document risk levels
+    - Identifying potential risk factors
     - Translating content across languages
     - Highlighting key points
     """)
@@ -142,12 +149,44 @@ with main_col1:
                 # Detect document language
                 detected_language = translation_helper.detect_language(st.session_state.document_text)
                 
+                # Assess risk level of the document
+                with st.spinner("Assessing document risk level..."):
+                    risk_level, risk_factors = assess_risk_level(st.session_state.document_text)
+                    # Store in session state
+                    st.session_state.risk_level = risk_level
+                    st.session_state.risk_factors = risk_factors
+                    
+                    # Get color for risk level
+                    risk_color = get_risk_color(risk_level)
+                
                 # Show document info
                 st.markdown("#### Document Information")
-                st.markdown(f"**Filename:** {uploaded_file.name}")
-                st.markdown(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
-                st.markdown(f"**Content Length:** {len(st.session_state.document_text)} characters")
-                st.markdown(f"**Detected Language:** {detected_language.capitalize()}")
+                
+                # Create two columns for info
+                doc_info_col1, doc_info_col2 = st.columns(2)
+                
+                with doc_info_col1:
+                    st.markdown(f"**Filename:** {uploaded_file.name}")
+                    st.markdown(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
+                    st.markdown(f"**Content Length:** {len(st.session_state.document_text)} characters")
+                    st.markdown(f"**Detected Language:** {detected_language.capitalize()}")
+                
+                with doc_info_col2:
+                    # Show risk level with appropriate color
+                    st.markdown(f"""
+                    <div style="padding: 10px; border-radius: 5px; background-color: {risk_color}; 
+                    color: white; font-weight: bold; text-align: center; margin-bottom: 10px;">
+                    Risk Level: {risk_level}
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Show risk factors in a bullet list
+                    if risk_factors:
+                        st.markdown("**Risk Factors Detected:**")
+                        for factor in risk_factors:
+                            st.markdown(f"• {factor}")
+                    else:
+                        st.markdown("**No specific risk factors detected**")
                 
                 # Show a preview
                 with st.expander("Document Preview"):
@@ -237,6 +276,8 @@ with main_col1:
         st.session_state.document_text = None
         st.session_state.summary = None
         st.session_state.translated_summary = None
+        st.session_state.risk_level = None
+        st.session_state.risk_factors = []
         st.rerun()
 
 # Results section
