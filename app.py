@@ -200,24 +200,49 @@ if 'target_language' not in st.session_state:
     st.session_state.target_language = "english"  # default target language
 
 # SIMPLIFIED LAYOUT - Main App Content
-st.markdown("<h1 class='big-title'>⚖️ Lawzio</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Multilingual Legal Document Analysis & Summarization</p>", unsafe_allow_html=True)
+# Add top navigation with language selector
+top_col1, top_col2 = st.columns([3, 1])
+
+with top_col1:
+    st.markdown("<h1 class='big-title'>⚖️ Lawzio</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='subtitle'>Multilingual Legal Document Analysis & Summarization</p>", unsafe_allow_html=True)
+
+with top_col2:
+    # UI Language selection in top right
+    st.markdown("<h3 style='margin-bottom:5px;'>Interface Language</h3>", unsafe_allow_html=True)
+    ui_lang_options = ["english", "hindi", "tamil", "spanish", "french", "german"]
+    ui_lang_index = ui_lang_options.index(st.session_state.ui_language) if st.session_state.ui_language in ui_lang_options else 0
+    
+    new_ui_lang = st.selectbox(
+        "Select interface language",
+        ui_lang_options,
+        index=ui_lang_index,
+        format_func=lambda x: x.capitalize(),
+        key="ui_language_selector"
+    )
+    
+    if new_ui_lang != st.session_state.ui_language:
+        st.session_state.ui_language = new_ui_lang
+        st.rerun()
 
 # CREATE TABS
 tab1, tab2 = st.tabs([
-    "📄 Process Document", 
-    "📋 Document History"
+    get_ui_text("process_document_tab", st.session_state.ui_language, "📄 Process Document"),
+    get_ui_text("document_history_tab", st.session_state.ui_language, "📋 Document History")
 ])
 
 # PROCESS DOCUMENT TAB
 with tab1:
     if st.session_state.document_text is None:
         # UPLOAD SECTION - Highly visible, centered, and prominent
-        st.markdown("""
+        upload_title = get_ui_text("upload_title", st.session_state.ui_language, "UPLOAD YOUR LEGAL DOCUMENT")
+        upload_subtitle = get_ui_text("upload_subtitle", st.session_state.ui_language, "Drag and drop your file or click to browse")
+        
+        st.markdown(f"""
         <div class="upload-container">
             <div class="upload-icon">📤</div>
-            <div class="upload-title">UPLOAD YOUR LEGAL DOCUMENT</div>
-            <div class="upload-subtitle">Drag and drop your file or click to browse</div>
+            <div class="upload-title">{upload_title}</div>
+            <div class="upload-subtitle">{upload_subtitle}</div>
         """, unsafe_allow_html=True)
         
         # Large and prominent file uploader
