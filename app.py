@@ -423,46 +423,46 @@ else:
         st.rerun()
 
 # Results section
-with main_col2:
-    st.header(get_ui_text('summary_results', st.session_state.ui_language))
-    
-    if st.session_state.translated_summary:
-        # Show summary details
-        st.markdown(f"#### {get_ui_text(st.session_state.detail_level + '_summary', st.session_state.ui_language)} {get_ui_text('in_language', st.session_state.ui_language, st.session_state.target_language.capitalize())}")
+    with main_col2:
+        st.header(get_ui_text('summary_results', st.session_state.ui_language))
         
-        # Translation method is no longer displayed
-        
-        # Create a container with a scrollable area for the summary
-        summary_container = st.container(height=500)
-        with summary_container:
-            st.markdown(st.session_state.translated_summary)
-        
-        # Download options
-        st.download_button(
-            label=get_ui_text('download_summary', st.session_state.ui_language),
-            data=st.session_state.translated_summary,
-            file_name=f"legal_summary_{st.session_state.detail_level}_{st.session_state.target_language}.txt",
-            mime="text/plain"
-        )
-    else:
-        # Show empty state
-        st.info(get_ui_text('empty_state_msg', st.session_state.ui_language))
-        
-        # Sample capabilities
-        st.markdown(f"### {get_ui_text('lawzio_capabilities', st.session_state.ui_language)}")
-        
-        feature_col1, feature_col2 = st.columns(2)
-        
-        with feature_col1:
-            st.markdown(f"✅ **{get_ui_text('legal_judgments', st.session_state.ui_language)}**")
-            st.markdown(f"✅ **{get_ui_text('contracts_agreements', st.session_state.ui_language)}**")
-            st.markdown(f"✅ **{get_ui_text('court_orders', st.session_state.ui_language)}**")
-        
-        with feature_col2:
-            st.markdown(f"✅ **{get_ui_text('legal_notices', st.session_state.ui_language)}**")
-            st.markdown(f"✅ **{get_ui_text('legal_opinions', st.session_state.ui_language)}**")
-            st.markdown(f"✅ **{get_ui_text('terms_conditions', st.session_state.ui_language)}**")
+        if st.session_state.translated_summary:
+            # Show summary details
+            st.markdown(f"#### {get_ui_text(st.session_state.detail_level + '_summary', st.session_state.ui_language)} {get_ui_text('in_language', st.session_state.ui_language, st.session_state.target_language.capitalize())}")
+            
+            # Translation method is no longer displayed
+            
+            # Create a container with a scrollable area for the summary
+            summary_container = st.container(height=500)
+            with summary_container:
+                st.markdown(st.session_state.translated_summary)
+            
+            # Download options
+            st.download_button(
+                label=get_ui_text('download_summary', st.session_state.ui_language),
+                data=st.session_state.translated_summary,
+                file_name=f"legal_summary_{st.session_state.detail_level}_{st.session_state.target_language}.txt",
+                mime="text/plain"
+            )
+        else:
+            # Show empty state
+            st.info(get_ui_text('empty_state_msg', st.session_state.ui_language))
+            
+            # Sample capabilities
+            st.markdown(f"### {get_ui_text('lawzio_capabilities', st.session_state.ui_language)}")
+            
+            feature_col1, feature_col2 = st.columns(2)
+            
+            with feature_col1:
+                st.markdown(f"✅ **{get_ui_text('legal_judgments', st.session_state.ui_language)}**")
+                st.markdown(f"✅ **{get_ui_text('contracts_agreements', st.session_state.ui_language)}**")
+                st.markdown(f"✅ **{get_ui_text('court_orders', st.session_state.ui_language)}**")
+            
+            with feature_col2:
+                st.markdown(f"✅ **{get_ui_text('legal_notices', st.session_state.ui_language)}**")
+                st.markdown(f"✅ **{get_ui_text('legal_opinions', st.session_state.ui_language)}**")
+                st.markdown(f"✅ **{get_ui_text('terms_conditions', st.session_state.ui_language)}**")
 
-# Footer
+# Footer - outside the conditional blocks, so it appears on both pages
 st.divider()
 st.markdown(f"*{get_ui_text('footer_tagline', st.session_state.ui_language)}*")
