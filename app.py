@@ -1,10 +1,18 @@
 import streamlit as st
 import time
+import os
 from utils.document_processor import process_document
 from utils.openai_helper import OpenAIHelper
 from utils.translator import TranslationHelper
 from utils.risk_assessment import assess_risk_level, get_risk_color
 from utils.localization import get_ui_text
+from utils.database import (
+    save_document_history, 
+    save_document_summary, 
+    get_recent_documents,
+    get_document_with_risk_factors,
+    get_document_summaries
+)
 
 # Set page configuration
 st.set_page_config(
@@ -235,6 +243,24 @@ with main_col1:
                     
                     # Get color for risk level
                     risk_color = get_risk_color(risk_level)
+                    
+                    # Save document information to database
+                    try:
+                        document_id = save_document_history(
+                            filename=uploaded_file.name,
+                            file_size_kb=round(uploaded_file.size / 1024, 2),
+                            document_language=detected_language,
+                            risk_level=risk_level,
+                            content_length=len(st.session_state.document_text),
+                            risk_factors=risk_factors
+                        )
+                        # Store document ID in session state for later use
+                        st.session_state.document_id = document_id
+                    except Exception as db_error:
+                        # If database save fails, just log and continue
+                        # This ensures the app works even if database is not available
+                        print(f"Database save error: {db_error}")
+                        st.session_state.document_id = None
                 
                 # Show document info
                 st.markdown(f"#### {get_ui_text('document_information', st.session_state.ui_language)}")
@@ -340,6 +366,29 @@ with main_col1:
                 else:
                     st.session_state.translation_method_used = None
                     st.session_state.translated_summary = st.session_state.summary
+                
+                # Save the summary to database if we have a document ID
+                if hasattr(st.session_state, 'document_id') and st.session_state.document_id:
+                    try:
+                        # Save original English summary
+                        save_document_summary(
+                            document_id=st.session_state.document_id,
+                            summary_text=st.session_state.summary,
+                            detail_level=st.session_state.detail_level,
+                            language="english"
+                        )
+                        
+                        # Save translated summary if different from English
+                        if st.session_state.target_language != "english":
+                            save_document_summary(
+                                document_id=st.session_state.document_id,
+                                summary_text=st.session_state.translated_summary,
+                                detail_level=st.session_state.detail_level,
+                                language=st.session_state.target_language
+                            )
+                    except Exception as db_error:
+                        # If database save fails, just log and continue
+                        print(f"Database save error for summary: {db_error}")
         except Exception as e:
             st.error(get_ui_text('summary_error', st.session_state.ui_language, str(e)))
     
