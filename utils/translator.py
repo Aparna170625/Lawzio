@@ -1,10 +1,12 @@
 import os
 import json
 import re
-# Import for direct HTTP requests to free translation service
 import requests
 from openai import OpenAI
 from langdetect import detect, LangDetectException
+
+# Import our direct translators
+from utils.direct_translator import get_translator, TamilLegalTranslator
 
 # Try to import IndicTranslator
 try:
@@ -163,88 +165,19 @@ class TranslationHelper:
         
         # Use a simpler approach - try each method in sequence until one works
         
-        # For Tamil, use our enhanced template as the primary method (most reliable without API dependency)
-        if not translated_text and target_language.lower() == "tamil":
+        # Use our specialized direct translators - most reliable and no API dependency
+        translator = get_translator(lang_code)
+        if translator:
             try:
-                print(f"Using enhanced Tamil local translation")
-                
-                # Common Tamil legal terms and phrases dictionary
-                tamil_legal_terms = {
-                    "agreement": "ஒப்பந்தம்",
-                    "contract": "ஒப்பந்தம்",
-                    "party": "கட்சி",
-                    "parties": "கட்சிகள்",
-                    "terms": "விதிமுறைகள்",
-                    "conditions": "நிபந்தனைகள்",
-                    "clause": "பிரிவு",
-                    "section": "பிரிவு",
-                    "law": "சட்டம்",
-                    "legal": "சட்டபூர்வமான",
-                    "court": "நீதிமன்றம்",
-                    "judge": "நீதிபதி",
-                    "plaintiff": "வாதி",
-                    "defendant": "பிரதிவாதி",
-                    "witness": "சாட்சி",
-                    "evidence": "ஆதாரம்",
-                    "testimony": "சாட்சியம்",
-                    "verdict": "தீர்ப்பு",
-                    "ruling": "தீர்ப்பு",
-                    "judgment": "தீர்ப்பு",
-                    "appeal": "மேல்முறையீடு",
-                    "attorney": "வழக்கறிஞர்",
-                    "lawyer": "வழக்கறிஞர்",
-                    "advocate": "வழக்கறிஞர்",
-                    "client": "வாடிக்கையாளர்",
-                    "rights": "உரிமைகள்",
-                    "obligations": "கடமைகள்",
-                    "liability": "பொறுப்பு",
-                    "damages": "இழப்பீடுகள்",
-                    "compensation": "இழப்பீடு",
-                    "breach": "மீறல்",
-                    "violation": "மீறல்",
-                    "penalty": "அபராதம்",
-                    "fine": "அபராதம்",
-                    "termination": "முடிவுறுத்தல்",
-                    "jurisdiction": "அதிகார வரம்பு",
-                    "arbitration": "நடுவர் தீர்ப்பு",
-                    "mediation": "மத்தியஸ்தம்",
-                    "settlement": "தீர்வு",
-                    "document": "ஆவணம்",
-                    "signature": "கையொப்பம்",
-                    "date": "தேதி",
-                    "property": "சொத்து",
-                    "confidential": "இரகசியமான",
-                    "confidentiality": "இரகசியத்தன்மை",
-                    "payment": "கட்டணம்",
-                    "fee": "கட்டணம்",
-                    "dispute": "சர்ச்சை",
-                    "hereby": "இதன்மூலம்",
-                    "whereas": "அதேபோல்",
-                    "notwithstanding": "எனினும்",
-                    "herein": "இதில்",
-                    "hereof": "இதைப் பற்றி",
-                    "thereof": "அதைப் பற்றி",
-                    "summary": "சுருக்கம்"
-                }
-                
-                # Add some basic Tamil phrases for legal document translation
-                tamil_header = "சட்ட ஆவண சுருக்கம்"  # Legal Document Summary
-                tamil_intro = "இந்த சட்ட ஆவணத்தின் சுருக்கம் பின்வருமாறு:"  # The summary of this legal document is as follows
-                tamil_note = "குறிப்பு: இது முழுமையான மொழிபெயர்ப்பு அல்ல, மேலும் முக்கிய சட்ட சொற்களுக்கான பொருள் மட்டுமே வழங்கப்படுகிறது."  # Note: This is not a complete translation, and only provides meaning for key legal terms.
-                
-                # Replace common legal terms in the original text
-                enhanced_text = text
-                for eng_term, tamil_term in tamil_legal_terms.items():
-                    # Replace whole words only (with word boundaries)
-                    import re
-                    pattern = r'\b' + re.escape(eng_term) + r'\b'
-                    enhanced_text = re.sub(pattern, f"{eng_term} ({tamil_term})", enhanced_text, flags=re.IGNORECASE)
-                
-                # Create a formatted Tamil summary with translated key terms
-                translated_text = f"{tamil_header}\n\n{tamil_intro}\n\n----\n\n{enhanced_text}\n\n----\n\n{tamil_note}"
-                translation_method = "Enhanced Tamil Template"
+                print(f"Using direct translator for {target_language}")
+                if isinstance(translator, TamilLegalTranslator):
+                    translated_text = translator.translate(text)
+                    translation_method = "Enhanced Tamil Template"
+                else:
+                    translated_text = translator.translate(text)
+                    translation_method = f"Direct {target_language.capitalize()} Translation"
             except Exception as e:
-                print(f"Enhanced Tamil translation failed: {str(e)}")
+                print(f"Direct translator failed: {str(e)}")
                 translated_text = None
                 
         # Method 5: Direct translation with basic templates (fallback for all languages)
