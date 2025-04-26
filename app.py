@@ -72,9 +72,10 @@ with st.sidebar:
         if st.session_state.ui_language in language_codes else 0
     )
     
-    # Update UI language if changed
-    if ui_language.lower() != st.session_state.ui_language:
-        st.session_state.ui_language = ui_language.lower()
+    # Update UI language if changed - convert display name to code
+    selected_language_code = language_codes[languages.index(ui_language)]
+    if selected_language_code != st.session_state.ui_language:
+        st.session_state.ui_language = selected_language_code
         st.rerun()  # Rerun the app to reflect UI language change
     
     # Detail level setting
@@ -104,7 +105,11 @@ with st.sidebar:
         index=language_codes.index(st.session_state.target_language)
         if st.session_state.target_language in language_codes else 0
     )
-    st.session_state.target_language = target_language.lower()
+    
+    # Update target language if changed - convert display name to code
+    selected_language_code = language_codes[languages.index(target_language)]
+    if selected_language_code != st.session_state.target_language:
+        st.session_state.target_language = selected_language_code
     
     # About section
     st.divider()
