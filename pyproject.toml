@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
+    "anthropic>=0.50.0",
     "googletrans>=4.0.2",
     "langdetect>=1.0.9",
     "openai>=1.76.0",

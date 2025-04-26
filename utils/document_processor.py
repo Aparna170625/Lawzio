@@ -49,6 +49,14 @@ def extract_text_with_ocr(pdf_file):
         str: Extracted text using OCR
     """
     try:
+        # Check if tesseract is available
+        try:
+            pytesseract.get_tesseract_version()
+        except Exception:
+            return """OCR processing requires Tesseract to be installed.
+            This demo environment may not have Tesseract OCR fully configured.
+            Please try uploading a document with embedded text."""
+        
         # Convert PDF to images
         images = convert_from_bytes(pdf_file.getvalue(), dpi=300, first_page=1, last_page=5)
         
@@ -62,10 +70,20 @@ def extract_text_with_ocr(pdf_file):
             if i >= 4:  # Process up to 5 pages
                 text += "\n[Document truncated for processing efficiency]"
                 break
+        
+        # Check if OCR produced meaningful text
+        if len(text.strip()) < 50:
+            text += "\n\n[Warning: OCR may not have extracted text properly. Please try a clearer document or a different format.]"
                 
         return text
     except Exception as e:
-        raise Exception(f"OCR processing error: {str(e)}")
+        error_msg = str(e)
+        if "poppler" in error_msg.lower():
+            return """PDF to image conversion requires poppler to be installed.
+            This demo environment may not have all required components configured.
+            Please try uploading a document in another format like DOCX or TXT."""
+        else:
+            raise Exception(f"OCR processing error: {error_msg}")
 
 def read_docx(docx_file):
     """
@@ -77,6 +95,7 @@ def read_docx(docx_file):
     Returns:
         str: Extracted text content
     """
+    tmp_path = None
     try:
         # Create a temporary file to save the uploaded file
         with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp_file:
@@ -90,11 +109,12 @@ def read_docx(docx_file):
             text += paragraph.text + "\n"
         
         # Clean up the temporary file
-        os.unlink(tmp_path)
+        if tmp_path:
+            os.unlink(tmp_path)
         return text
     except Exception as e:
         # Clean up temp file in case of exception
-        if 'tmp_path' in locals():
+        if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
         raise Exception(f"Error processing DOCX: {str(e)}")
 
@@ -125,15 +145,33 @@ def process_image(image_file):
         str: Extracted text content
     """
     try:
+        # Check if tesseract is available first
+        try:
+            pytesseract.get_tesseract_version()
+        except Exception:
+            return """OCR processing requires Tesseract to be installed.
+            This demo environment may not have Tesseract OCR fully configured.
+            Please try uploading a document with embedded text (like PDF or DOCX)."""
+            
         # Open the image using PIL
         image = Image.open(image_file)
         
         # Use pytesseract for OCR
         text = pytesseract.image_to_string(image)
         
+        # Check if OCR produced meaningful text
+        if len(text.strip()) < 20:
+            text += "\n\n[Warning: OCR may not have extracted text properly. Please try a clearer image or a different format.]"
+        
         return text
     except Exception as e:
-        raise Exception(f"Error processing image with OCR: {str(e)}")
+        error_msg = str(e)
+        if "tesseract" in error_msg.lower():
+            return """OCR processing requires Tesseract to be installed.
+            This demo environment may not have Tesseract OCR fully configured.
+            Please try uploading a document with embedded text (like PDF or DOCX)."""
+        else:
+            raise Exception(f"Error processing image with OCR: {error_msg}")
 
 def process_document(uploaded_file):
     """
