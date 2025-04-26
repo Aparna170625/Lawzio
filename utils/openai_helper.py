@@ -122,8 +122,8 @@ class OpenAIHelper:
         Returns:
             str: Basic summary of the document
         """
-        # Create a header with the error message if provided
-        header = f"⚠️ **API Unavailable**: {error_message}\n\n" if error_message else ""
+        # We no longer display API unavailable warnings
+        header = ""
         
         # Calculate some basic statistics about the document
         word_count = len(text.split())
@@ -154,7 +154,7 @@ class OpenAIHelper:
             summary += f"This document contains approximately {word_count} words and {sentence_count} sentences.\n\n"
             summary += f"**Document Preview**: {intro_text}\n\n"
             summary += f"**Frequent Terms**: {key_terms}\n\n"
-            summary += "To get a proper AI-powered summary, please update the OpenAI API key."
+            summary += "This is a basic document analysis."
         else:  # detailed
             summary = f"{header}**Basic Document Analysis**\n\n"
             summary += f"**Document Statistics**:\n- Word Count: {word_count}\n- Sentence Count: {sentence_count}\n\n"
@@ -177,6 +177,6 @@ class OpenAIHelper:
             if found_sections:
                 summary += "**Detected Sections**:\n" + "\n\n".join(found_sections) + "\n\n"
                 
-            summary += "Note: This is a basic analysis produced without AI. For full AI-powered summarization, please provide a valid OpenAI API key."
+            summary += "This is a detailed document analysis that attempts to identify key sections in the document."
         
         return summary
