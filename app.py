@@ -269,19 +269,8 @@ with main_col1:
                                 st.session_state.target_language
                             )
                             
-                            # Extract the translation method used from the response
-                            # Translation helper adds "Translation method used: METHOD" to the beginning
-                            if translated_text and "Translation method used:" in translated_text:
-                                # Split by newlines to get the first line
-                                first_line = translated_text.split('\n')[0]
-                                if "Translation method used:" in first_line:
-                                    # Extract the method name
-                                    method_part = first_line.split("Translation method used:")[1].strip()
-                                    st.session_state.translation_method_used = method_part
-                                    # Remove the method line from the translated text
-                                    translated_text = translated_text.replace(first_line, "").strip()
-                                    if translated_text.startswith('\n\n'):
-                                        translated_text = translated_text[2:]
+                            # We no longer extract translation method information
+                            # as it's not displayed in the UI anymore
                             
                             st.session_state.translated_summary = translated_text
                     except Exception as trans_error:
@@ -310,9 +299,7 @@ with main_col2:
         # Show summary details
         st.markdown(f"#### {get_ui_text(st.session_state.detail_level + '_summary', st.session_state.ui_language)} {get_ui_text('in_language', st.session_state.ui_language, st.session_state.target_language.capitalize())}")
         
-        # Show which translation method was used, if any
-        if st.session_state.target_language != "english" and hasattr(st.session_state, 'translation_method_used') and st.session_state.translation_method_used:
-            st.info(f"{get_ui_text('translation_method_used', st.session_state.ui_language)}: **{st.session_state.translation_method_used}**")
+        # Translation method is no longer displayed
         
         # Create a container with a scrollable area for the summary
         summary_container = st.container(height=500)

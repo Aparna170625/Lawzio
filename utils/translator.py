@@ -221,11 +221,8 @@ class TranslationHelper:
         if not translated_text:
             return f"[Translation to {target_language} failed. All translation services failed.]\n\n{text}"
         
-        # Prepend translation method for transparency
-        if translation_method:
-            return f"Translation method used: {translation_method}\n\n{translated_text}"
-        else:
-            return translated_text
+        # Return the translated text without mentioning translation method
+        return translated_text
     
     def _translate_with_openai(self, text, target_language):
         """Use OpenAI for translation as a fallback"""
