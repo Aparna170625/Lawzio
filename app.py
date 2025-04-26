@@ -74,7 +74,16 @@ with st.sidebar:
     
     # Update UI language if changed - convert display name to code
     selected_language_code = language_codes[languages.index(ui_language)]
-    if selected_language_code != st.session_state.ui_language:
+    
+    # Only use fully supported languages (English, Hindi, Tamil) for UI localization
+    # For others, fall back to English
+    if selected_language_code not in ["english", "hindi", "tamil"]:
+        # Store the user's preference, but use English for display
+        if selected_language_code != st.session_state.ui_language:
+            st.session_state.ui_language = "english"
+            st.warning(f"{ui_language} UI localization not fully supported yet. Using English for interface.")
+            st.rerun()
+    elif selected_language_code != st.session_state.ui_language:
         st.session_state.ui_language = selected_language_code
         st.rerun()  # Rerun the app to reflect UI language change
     
