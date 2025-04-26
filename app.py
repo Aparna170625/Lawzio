@@ -13,6 +13,81 @@ st.set_page_config(
     layout="wide",
 )
 
+# Add custom styling to make Lawzio colorful and professional
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(to right, #ffffff, #f7f8fa);
+    }
+
+    .big-title {
+        font-size: 48px;
+        color: #2E86C1;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        font-size: 24px;
+        color: #117864;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .upload-box {
+        border: 2px dashed #0066CC;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #eaf4ff;
+        margin-bottom: 20px;
+    }
+
+    .button-style {
+        background-color: #0066CC;
+        color: white;
+        border-radius: 8px;
+        font-size: 18px;
+        padding: 10px 20px;
+    }
+
+    .button-style:hover {
+        background-color: #0052a3;
+    }
+
+    .risk-high {
+        background-color: #CB4335;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .risk-medium {
+        background-color: #FF9800;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .risk-low {
+        background-color: #00C853;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Initialize session state variables if they don't exist
 if 'document_text' not in st.session_state:
     st.session_state.document_text = None
@@ -51,9 +126,9 @@ def get_translation_helper():
 openai_helper = get_openai_helper()
 translation_helper = get_translation_helper()
 
-# App header
-st.title(get_ui_text("app_title", st.session_state.ui_language))
-st.markdown("*" + get_ui_text("app_description", st.session_state.ui_language) + "*")
+# App header with custom styling
+st.markdown(f'<div class="big-title">{get_ui_text("app_title", st.session_state.ui_language)}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="subtitle">{get_ui_text("app_description", st.session_state.ui_language)}</div>', unsafe_allow_html=True)
 
 # Sidebar for settings
 with st.sidebar:
@@ -132,11 +207,14 @@ main_col1, main_col2 = st.columns([2, 3])
 with main_col1:
     st.header(get_ui_text("document_upload", st.session_state.ui_language))
     
+    # Add a styled upload box
+    st.markdown('<div class="upload-box">', unsafe_allow_html=True)
     uploaded_file = st.file_uploader(
         get_ui_text("upload_prompt", st.session_state.ui_language),
         type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "tiff", "tif", "bmp"],
         help=get_ui_text("upload_help", st.session_state.ui_language)
     )
+    st.markdown('</div>', unsafe_allow_html=True)
     
     if uploaded_file is not None:
         try:
@@ -171,11 +249,16 @@ with main_col1:
                     st.markdown(f"**{get_ui_text('detected_language', st.session_state.ui_language)}** {detected_language.capitalize()}")
                 
                 with doc_info_col2:
-                    # Show risk level with appropriate color
+                    # Show risk level with appropriate color using our custom CSS classes
+                    risk_class = "risk-low"
+                    if risk_level.lower() == "high":
+                        risk_class = "risk-high"
+                    elif risk_level.lower() == "medium":
+                        risk_class = "risk-medium"
+                    
                     st.markdown(f"""
-                    <div style="padding: 10px; border-radius: 5px; background-color: {risk_color}; 
-                    color: white; font-weight: bold; text-align: center; margin-bottom: 10px;">
-                    {get_ui_text('risk_level', st.session_state.ui_language)} {risk_level}
+                    <div class="{risk_class}">
+                    🛡️ {get_ui_text('risk_level', st.session_state.ui_language)} {risk_level}
                     </div>
                     """, unsafe_allow_html=True)
                     
