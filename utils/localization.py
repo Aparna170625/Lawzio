@@ -102,8 +102,8 @@ TRANSLATIONS = {
         "terms_conditions": "Terms & Conditions",
         
         # Footer
-        "footer": "Lawzio - Making legal documents accessible for everyone",
-        "footer_tagline": "Lawzio - Making legal documents accessible for everyone"
+        "footer": "Lawzio - Making legal documents accessible for everyone | Created by M APARNA & PRAVEEN R",
+        "footer_tagline": "Lawzio - Making legal documents accessible for everyone | Created by M APARNA & PRAVEEN R"
     },
     
     "hindi": {
@@ -203,8 +203,8 @@ TRANSLATIONS = {
         "terms_conditions": "नियम और शर्तें",
         
         # Footer
-        "footer": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना",
-        "footer_tagline": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना"
+        "footer": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना | M APARNA & PRAVEEN R द्वारा निर्मित",
+        "footer_tagline": "लॉज़िओ - कानूनी दस्तावेजों को सभी के लिए सुलभ बनाना | M APARNA & PRAVEEN R द्वारा निर्मित"
     },
     
     "tamil": {
@@ -304,8 +304,8 @@ TRANSLATIONS = {
         "terms_conditions": "விதிமுறைகள் & நிபந்தனைகள்",
         
         # Footer
-        "footer": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்",
-        "footer_tagline": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல்"
+        "footer": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல் | M APARNA & PRAVEEN R ஆல் உருவாக்கப்பட்டது",
+        "footer_tagline": "லாசியோ - சட்ட ஆவணங்களை அனைவருக்கும் அணுகக்கூடியதாக்குதல் | M APARNA & PRAVEEN R ஆல் உருவாக்கப்பட்டது"
     },
     
     # Add basic templates for other Indian languages
