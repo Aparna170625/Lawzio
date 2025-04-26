@@ -107,7 +107,15 @@ class TranslationHelper:
         
         lang_code = self.languages[target_language.lower()]
         
-        # Try Google Translate first
+        # For Tamil specifically, use OpenAI directly as googletrans can be unreliable with Tamil
+        if target_language.lower() == "tamil" and self.openai_client:
+            try:
+                return self._translate_with_openai(text, target_language)
+            except Exception as openai_error:
+                # If OpenAI fails, still try Google Translate as fallback
+                pass
+                
+        # Try Google Translate first for all other languages, or as fallback for Tamil
         try:
             result = self.google_translator.translate(text, dest=lang_code)
             return result.text
@@ -117,9 +125,11 @@ class TranslationHelper:
                 try:
                     return self._translate_with_openai(text, target_language)
                 except Exception as openai_error:
-                    raise Exception(f"Translation failed: {str(e)}. OpenAI fallback also failed: {str(openai_error)}")
+                    # Return a graceful error message with the original text
+                    return f"[Translation to {target_language} failed. Error: {str(e)}]\n\n{text}"
             else:
-                raise Exception(f"Translation failed: {str(e)}. OpenAI fallback not available.")
+                # Return a graceful error message with the original text
+                return f"[Translation to {target_language} failed. Error: {str(e)}. OpenAI fallback not available.]\n\n{text}"
     
     def _translate_with_openai(self, text, target_language):
         """Use OpenAI for translation as a fallback"""

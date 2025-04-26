@@ -145,11 +145,15 @@ with main_col1:
                 
                 # Translate if needed
                 if st.session_state.target_language != "english":
-                    with st.spinner(f"Translating to {st.session_state.target_language.capitalize()}..."):
-                        st.session_state.translated_summary = translation_helper.translate_text(
-                            st.session_state.summary,
-                            st.session_state.target_language
-                        )
+                    try:
+                        with st.spinner(f"Translating to {st.session_state.target_language.capitalize()}..."):
+                            st.session_state.translated_summary = translation_helper.translate_text(
+                                st.session_state.summary,
+                                st.session_state.target_language
+                            )
+                    except Exception as trans_error:
+                        st.warning(f"Translation error: {str(trans_error)}. Showing original summary.")
+                        st.session_state.translated_summary = f"**Translation Error**: Could not translate to {st.session_state.target_language.capitalize()}. Showing original summary in English.\n\n{st.session_state.summary}"
                 else:
                     st.session_state.translated_summary = st.session_state.summary
         except Exception as e:
