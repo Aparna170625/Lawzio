@@ -1,8 +1,8 @@
 import os
 import json
 import re
-from googletrans.constants import LANGUAGES, LANGCODES
-from googletrans import Translator
+# Import for direct HTTP requests to free translation service
+import requests
 from openai import OpenAI
 from langdetect import detect, LangDetectException
 
@@ -21,8 +21,9 @@ MODEL_NAME = "gpt-4o"
 class TranslationHelper:
     def __init__(self):
         """Initialize translation helper with Google Translate and OpenAI backup"""
-        self.google_translator = Translator()
-        
+        # We no longer use the googletrans library due to coroutine issues
+        # Instead we'll use direct API calls with requests
+            
         # Check OpenAI API key
         self.openai_available = False
         self.openai_client = None
@@ -162,89 +163,7 @@ class TranslationHelper:
         
         # Use a simpler approach - try each method in sequence until one works
         
-        # Method 1: IndicTrans for Indian languages (if available)
-        is_indic_target = target_language.lower() in ["hindi", "tamil", "bengali", "marathi", 
-                                                    "telugu", "gujarati", "kannada", "malayalam", 
-                                                    "punjabi", "urdu", "odia"]
-        
-        if not translated_text and hasattr(self, 'indic_translator') and self.indic_translator and getattr(self.indic_translator, 'is_available', False) and is_indic_target:
-            try:
-                print(f"Using IndicTrans for {source_language} to {target_language} translation")
-                translated_text = self.indic_translator.translate(text, source_language, target_language)
-                if translated_text and translated_text.strip():
-                    translation_method = "IndicTrans"
-                else:
-                    translated_text = None
-            except Exception as e:
-                print(f"IndicTrans translation failed: {str(e)}")
-                translated_text = None
-        
-        # Method 2: Google Translate API (reliable and doesn't require API key)
-        if not translated_text:
-            try:
-                print(f"Using Google Translate for {source_language} to {target_language} translation")
-                # Get language codes for Google Translate
-                src_code = 'en'  # Default source is English for summaries
-                dest_code = self.languages.get(target_language.lower(), 'en')
-                
-                # Use Google Translate API
-                translation = self.google_translator.translate(
-                    text=text,
-                    src=src_code,
-                    dest=dest_code
-                )
-                
-                # Make sure we get a proper translation object back
-                if hasattr(translation, 'text') and translation.text:
-                    translated_text = translation.text
-                    translation_method = "Google Translate"
-                else:
-                    # Handle case where translation is a coroutine (async response)
-                    if hasattr(translation, '__await__'):
-                        print("Google Translate returned a coroutine, cannot process")
-                        translated_text = None
-                    else:
-                        # Try to extract text from whatever was returned
-                        try:
-                            translated_text = str(translation)
-                            translation_method = "Google Translate"
-                        except:
-                            translated_text = None
-            except Exception as e:
-                print(f"Google Translate failed: {str(e)}")
-                translated_text = None
-        
-        # Method 3: OpenAI for Tamil specifically (and as a third option for others)
-        if not translated_text and self.openai_available and self.openai_client:
-            try:
-                print(f"Using OpenAI for {source_language} to {target_language} translation")
-                # Create a system prompt for translation
-                system_prompt = f"You are a professional translator specializing in legal documents. Translate the following text accurately to {target_language}, maintaining legal meaning and terminology."
-                
-                response = self.openai_client.chat.completions.create(
-                    model=MODEL_NAME,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": text}
-                    ],
-                    temperature=0.3,
-                )
-                
-                translated_text = response.choices[0].message.content
-                if translated_text and translated_text.strip():
-                    translation_method = "OpenAI GPT-4o"
-                else:
-                    translated_text = None
-            except Exception as e:
-                error_str = str(e)
-                if "quota" in error_str.lower() or "insufficient_quota" in error_str:
-                    print(f"OpenAI API quota exceeded, cannot use for translation")
-                    self.openai_available = False
-                else:
-                    print(f"OpenAI translation failed: {error_str}")
-                translated_text = None
-        
-        # Method 4: Use a comprehensive local translator for Tamil
+        # For Tamil, use our enhanced template as the primary method (most reliable without API dependency)
         if not translated_text and target_language.lower() == "tamil":
             try:
                 print(f"Using enhanced Tamil local translation")
