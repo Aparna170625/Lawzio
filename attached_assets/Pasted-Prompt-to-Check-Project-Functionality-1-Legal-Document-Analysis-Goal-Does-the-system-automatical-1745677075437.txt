@@ -1,0 +1,102 @@
+Prompt to Check Project Functionality:
+1. Legal Document Analysis:
+Goal: Does the system automatically analyze complex legal documents across multiple Indian languages (Hindi, Tamil, English, Marathi)?
+
+Check:
+
+Is there an OCR integration (using Tesseract) to read scanned documents?
+
+Does the system detect the language of the document using langdetect and translate it using IndicTrans?
+
+2. Key Clause Extraction:
+Goal: Extract key clauses from legal documents.
+
+Check:
+
+Does the model use XLM-RoBERTa or other models for Clause Classification to identify and extract the most important legal clauses?
+
+3. Legal Risk Detection:
+Goal: Automatically detect legal risks (low, medium, high) within documents.
+
+Check:
+
+Is there a hybrid model combining Rule-based logic, SVM, and Legal-BERT for identifying risks in legal text?
+
+Does it detect risk based on certain legal clauses or terms?
+
+4. Summarization of Content:
+Goal: Summarize legal documents in simple, multilingual output.
+
+Check:
+
+Does the system generate concise summaries using mT5-small?
+
+Are summaries available in multiple languages and tailored for non-expert users?
+
+5. Explainable AI (XAI) Integration:
+Goal: Ensure transparency in decision-making.
+
+Check:
+
+Does the system use SHAP values and attention maps for explainability?
+
+Can users view the reasoning behind legal risk detection or clause extraction?
+
+6. Active Learning:
+Goal: Improve the system using real-time feedback.
+
+Check:
+
+Is there a feedback loop for users (e.g., lawyers or clients) to provide corrections that improve the model over time?
+
+7. Contrastive Learning for Similar Clauses:
+Goal: Help the model distinguish between similar legal clauses.
+
+Check:
+
+Does the system use contrastive learning to help identify nuances and small differences between clauses?
+
+8. Graph Neural Networks (GNNs):
+Goal: Identify relationships between legal clauses.
+
+Check:
+
+Does the system use GNNs to map connections between different parts of a legal document (e.g., clauses and their dependencies)?
+
+9. Evaluation Metrics:
+Goal: Evaluate the model’s performance.
+
+Check:
+
+Are the system's outputs evaluated using accuracy, F1 score, ROUGE, BLEU, and human feedback?
+
+10. Deployment:
+Goal: Ensure a robust and secure deployment for end-users.
+
+Check:
+
+Is the system deployed using FastAPI with AES-256 encryption for secure communication?
+
+Does it support Role-Based Access Control (RBAC)?
+
+Is the system Dockerized for easy deployment on AWS or GCP?
+
+Is the frontend using Streamlit for a user-friendly interface?
+
+11. Security and Data Privacy:
+Goal: Ensure data privacy and secure access.
+
+Check:
+
+Is AES-256 encryption implemented for sensitive legal data?
+
+Does the system use JWT tokens for secure authentication and authorization?
+
+12. Scalability:
+Goal: The system should scale with increasing data and users.
+
+Check:
+
+Can the system scale to handle more languages beyond Hindi, Tamil, English, and Marathi?
+
+Is the backend optimized to handle large document uploads and analyses?
