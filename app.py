@@ -6,7 +6,7 @@ from utils.translator import TranslationHelper
 
 # Set page configuration
 st.set_page_config(
-    page_title="LEGL - Legal Document Summarizer",
+    page_title="Lawzio - Legal Document Summarizer",
     page_icon="⚖️",
     layout="wide",
 )
@@ -36,7 +36,7 @@ openai_helper = get_openai_helper()
 translation_helper = get_translation_helper()
 
 # App header
-st.title("⚖️ LEGL - Legal Document Summarizer")
+st.title("⚖️ Lawzio - Legal Document Summarizer")
 st.markdown("""
 *Simplify complex legal documents with AI-powered summarization and translation*
 """)
@@ -64,9 +64,9 @@ with st.sidebar:
     
     # About section
     st.divider()
-    st.markdown("### About LEGL")
+    st.markdown("### About Lawzio")
     st.markdown("""
-    LEGL helps users understand complex legal documents by:
+    Lawzio helps users understand complex legal documents by:
     - Summarizing lengthy legal texts
     - Simplifying legal jargon
     - Translating content across languages
@@ -179,7 +179,7 @@ with main_col2:
         st.info("Upload a document and click 'Summarize Document' to see results here.")
         
         # Sample capabilities
-        st.markdown("### LEGL Can Help You With:")
+        st.markdown("### Lawzio Can Help You With:")
         
         feature_col1, feature_col2 = st.columns(2)
         
@@ -195,4 +195,4 @@ with main_col2:
 
 # Footer
 st.divider()
-st.markdown("*LEGL - Making legal documents accessible for everyone*")
+st.markdown("*Lawzio - Making legal documents accessible for everyone*")
