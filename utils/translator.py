@@ -151,15 +151,17 @@ class TranslationHelper:
         if target_language.lower() not in self.languages:
             return f"Unsupported language: {target_language}. Supported languages are: {', '.join(self.languages.keys())}"
         
-        # Get source language
-        source_language = "english"  # Assume English source for summaries
+        # Detect the source language
+        source_language = self.detect_language(text)
+        print(f"Detected source language: {source_language}")
         
         # If already in target language, return as is
         if source_language.lower() == target_language.lower():
             return text
         
         lang_code = self.languages[target_language.lower()]
-        print(f"Translating from {source_language} to {target_language} (code: {lang_code})")
+        source_lang_code = self.languages.get(source_language.lower(), "en")
+        print(f"Translating from {source_language} (code: {source_lang_code}) to {target_language} (code: {lang_code})")
         
         translated_text = None
         translation_method = None
@@ -169,7 +171,7 @@ class TranslationHelper:
         # Method 1: Try Google Translate first for full text translation
         try:
             print(f"Using Google Translate API for {target_language}")
-            google_result = google_translate(text, lang_code, 'en')
+            google_result = google_translate(text, lang_code, source_lang_code)
             if google_result and google_result != text:
                 translated_text = google_result
                 translation_method = "Google Translate API"
